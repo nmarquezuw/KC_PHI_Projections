@@ -9,7 +9,7 @@ source("00a_hp_funcs.R")
 # the 2010 data are the census data,
 # the 2015 data are the estimates made by OFM,
 # the 2020-2040 data are the projections made by OFM
-OFM_data <- download_kc_age_sex_data()
+OFM_data <- download_kc_age_sex_projections()
 
 yrs <- c(2015, 2020, 2025, 2030, 2035)
 
@@ -27,12 +27,8 @@ df_post <- filter(df, Year == 2015)
 cwr <- calc_CWR(df_post)
 ccr <- calc_CCR(df_pre, df_post)
 
-# for loop to run hp_project function interatively until finishing the forecast for 2040
-for (i in yrs) {
-    df <- rbind(df, hp_project(df_pre, df_post, (i-2010), cwr, ccr) %>% filter(Year == (i+5)))
-    df_pre <- filter(df, Year == i)
-    df_post <- filter(df, Year == (i+5))
-}
+# make projections until 2040
+df <- hp_project(df_pre, df_post, years_out = 25)
 
 # make faceted line charts by Age5
 bind_rows(OFM_data, df, .id="source") %>%
