@@ -52,7 +52,7 @@ bind_rows(OFM_data, df, .id="source") %>%
     ylim(c(0, 3000000))
 
 
-# Mean age overtime (faceted by sex)
+# Mean age over time (faceted by sex)
 bind_rows(OFM_data, df, .id="source") %>%
     mutate(source = ifelse(source=="1", "OFM", "HP Projection")) %>%
     calc_mean_age() %>%
@@ -64,7 +64,7 @@ bind_rows(OFM_data, df, .id="source") %>%
     theme_bw() +
     facet_wrap(~Sex)
 
-# Mean age overtime (faceted by data source)
+# Mean age over time (faceted by data source)
 bind_rows(OFM_data, df, .id="source") %>%
     mutate(source = ifelse(source=="1", "OFM", "HP Projection")) %>%
     calc_mean_age() %>%
@@ -76,8 +76,8 @@ bind_rows(OFM_data, df, .id="source") %>%
     theme_bw() +
     facet_wrap(~source)
 
-    
-# Mean age overtime by sex (HP projection)
+
+# Mean age over time by sex (HP projection)
 df %>%
     calc_mean_age() %>%
     ggplot(aes(x=Year, y=mean_age, color=Sex, linetype=Sex)) +
@@ -85,7 +85,7 @@ df %>%
     scale_x_continuous(breaks = c(2010,2015,2020,2025,2030,2035,2040)) +
     scale_y_continuous(limits=c(30,42), breaks = seq(0,42, by = 1)) +
     labs(y="Mean Age") +
-    theme_bw() 
+    theme_bw()
 
 
 # HP projection with collapsed ages by sex
@@ -97,5 +97,3 @@ collapse_ages(df) %>%
     labs(fill="Age Group", y="Population") +
     theme_bw() +
     facet_wrap(~Sex)
-
-
