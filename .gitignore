@@ -42,3 +42,6 @@ vignettes/*.pdf
 *.png
 *.jpg
 *.jpeg
+
+# Unnecessary .DS_Store files in macOS
+.DS_Store
