@@ -169,3 +169,78 @@ download_kc_race_data <- function(tract = TRUE, collapse_hispanic = TRUE){
 
     re_kc_df
 }
+
+
+# required packages: tidyverse, readxl
+
+#' Download the most recent King County population forecast from WA OFM
+#' 
+#' @description download the most recent population forecast data (2017 Growth
+#' Management Act county projections) and clean up the data for furthur use
+#' 
+#' @param None
+#' @return data frame with columns for Year, Sex, Age5
+
+download_kc_age_sex_projections <- function() {
+    # data source
+    # Projections of the Population by Age and Sex for Growth Management
+    # 2017 GMA Projections - Medium Series
+    # https://ofm.wa.gov/sites/default/files/public/dataresearch/pop/GMA/projections17/gma_2017_age_sex_med.xlsx
+    
+    tf <- tempfile(fileext = ".xlsx")
+    "https://ofm.wa.gov/sites/default/files/public/dataresearch/pop/GMA/projections17/gma_2017_age_sex_med.xlsx" %>%
+        download.file(tf)
+    
+    # read data from the .xlsx file
+    DF <- read_excel(tf)
+    
+    # data cleaning
+    
+    # select the data only for King County
+    kc_df <- DF %>%
+        filter(DF[,1]=="King") %>%
+        select(-1) # exclude the last row, which is the total for the county
+    
+    # remove empty columns
+    kc_df <- kc_df[,-c(5,9)]
+    
+    
+    # initialize an empty list for dataframes of different years
+    kc_dfs <- list()
+    
+    # a list of dataframe names
+    df_names <- c("kc_2010", "kc_2015", "kc_2020", "kc_2025", "kc_2030", "kc_2035", "kc_2040")
+    
+    
+    n <- 2 # helper index variable for selecting the right columns for different years in the for loop
+    
+    # for loop to create a list of dataframes of different years
+    for (i in 1:length(df_names)) {
+        # create a dataframe with selected data for one year, excluding 'total' (last row)
+        df <- kc_df[1:nrow(kc_df)-1,c(1, n, n+1)]
+        # rename the column names
+        colnames(df)[1:3] <- c("Age5","Female", "Male")
+        #change the data frame to a desired format
+        df <-  df %>%
+            pivot_longer(`Female`:`Male`) %>%
+            mutate(
+                Year = as.integer(substr(df_names[i], 4, 7)),
+                Age5 = factor_ages(`Age5`), 
+                Sex = ifelse(str_detect(name, "Female"), "Female", "Male"),
+                value = as.numeric(value)
+            ) %>%
+            select(-name)
+        
+        # add the data frame to the list
+        kc_dfs[[df_names[i]]] <- df
+        
+        #update the helper variable
+        n <- n + 3
+    }
+    
+    # combine the data frames in the list as one data frame
+    clean_kc_df <- bind_rows(kc_dfs)
+    
+    # return the clean data frame
+    clean_kc_df
+}
