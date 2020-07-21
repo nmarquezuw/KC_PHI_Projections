@@ -181,7 +181,7 @@ download_kc_race_data <- function(tract = TRUE, collapse_hispanic = TRUE){
 #' @param None
 #' @return data frame with columns for Year, Sex, Age5
 
-download_kc_age_sex_data <- function() {
+download_kc_age_sex_projections <- function() {
     # data source
     # Projections of the Population by Age and Sex for Growth Management
     # 2017 GMA Projections - Medium Series
