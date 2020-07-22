@@ -244,3 +244,73 @@ download_kc_age_sex_projections <- function() {
     # return the clean data frame
     clean_kc_df
 }
+
+
+# required packages: sf, tidycensus
+
+#' Download the Median Household Income data from ACS
+#' 
+#' @description download the Median Household Income data from ACS
+#' 
+#' @param years required years in a list
+#' @param geography_level geography of the data: "tract", "county", "state"
+#' @param state state name or code for income data to pull
+#' @param county county name or code for income data to pull
+#' @param ... other parameters passed to get_acs
+#' @return clean data frame
+download_median_household_income <- function(
+    years,
+    geography_level,
+    state = "WA",
+    county = "King",
+    ...
+){
+    
+    var_selection <- c(
+        Overall = "B19013_001",
+        White = "B19013A_001",
+        Black = "B19013B_001",
+        AIAN = "B19013C_001",
+        Asian = "B19013D_001",
+        NHOPI = "B19013E_001",
+        Other = "B19013F_001",
+        'Two or More Races' = "B19013G_001"
+    )
+    
+    df <- get_acs(
+        geography_level,
+        variables = var_selection,
+        year = years[1],
+        state = state,
+        county = county,
+        ...
+    ) %>%
+        mutate(Year=years[1]) %>%
+        select(-moe)
+    
+    if (!is.na(years[2])) {
+        for (yr in years[2:length(years)]) {
+            df <- rbind(
+                df,
+                get_acs(
+                    geography_level,
+                    variables = var_selection,
+                    year = yr,
+                    state = state,
+                    county = county,
+                    ...
+                ) %>%
+                    mutate(Year=yr) %>%
+                    select(-moe)
+            )
+        }
+    }
+    
+    colnames(df)[3] = "Race"
+    
+    clean_df <- df %>%
+        rename('Median Household Income'=estimate) %>%
+        mutate(Year=as.integer(Year))
+    
+    clean_df
+}

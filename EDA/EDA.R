@@ -24,8 +24,8 @@ df <- OFM_data %>%
 # prepare the parameters for the hp_project function
 df_pre <- filter(df, Year == 2010)
 df_post <- filter(df, Year == 2015)
-cwr <- calc_CWR(df_post)
-ccr <- calc_CCR(df_pre, df_post)
+# cwr <- calc_CWR(df_post)
+# ccr <- calc_CCR(df_pre, df_post)
 
 # make projections until 2040
 df <- hp_project(df_pre, df_post, years_out = 25)
@@ -46,8 +46,54 @@ bind_rows(OFM_data, df, .id="source") %>%
     mutate(source = ifelse(source=="1", "OFM", "HP Projection")) %>%
     group_by(Year, source) %>%
     summarize(Population = sum(value)) %>%
-    ggplot(aes(x=Year, y=Population, color=source, linetype=source)) +
-    ylim(c(0, 3000000)) +
-    geom_line()
+    ggplot(aes(x=Year, y=Population, color=source, linetype=source))  +
+    geom_line() +
+    scale_x_continuous(breaks = c(2010,2015,2020,2025,2030,2035,2040)) +
+    ylim(c(0, 3000000))
 
 
+# Mean age over time (faceted by sex)
+bind_rows(OFM_data, df, .id="source") %>%
+    mutate(source = ifelse(source=="1", "OFM", "HP Projection")) %>%
+    calc_mean_age() %>%
+    ggplot(aes(x=Year, y=mean_age, color=source, linetype=source)) +
+    geom_line() +
+    scale_x_continuous(breaks = c(2010,2015,2020,2025,2030,2035,2040)) +
+    scale_y_continuous(limits=c(30,43), breaks = seq(0,43, by = 1)) +
+    labs(y="Mean Age") +
+    theme_bw() +
+    facet_wrap(~Sex)
+
+# Mean age over time (faceted by data source)
+bind_rows(OFM_data, df, .id="source") %>%
+    mutate(source = ifelse(source=="1", "OFM", "HP Projection")) %>%
+    calc_mean_age() %>%
+    ggplot(aes(x=Year, y=mean_age, color=Sex, linetype=Sex)) +
+    geom_line() +
+    scale_x_continuous(breaks = c(2010,2015,2020,2025,2030,2035,2040)) +
+    scale_y_continuous(limits=c(30,43), breaks = seq(0,43, by = 1)) +
+    labs(y="Mean Age") +
+    theme_bw() +
+    facet_wrap(~source)
+
+
+# Mean age over time by sex (HP projection)
+df %>%
+    calc_mean_age() %>%
+    ggplot(aes(x=Year, y=mean_age, color=Sex, linetype=Sex)) +
+    geom_line() +
+    scale_x_continuous(breaks = c(2010,2015,2020,2025,2030,2035,2040)) +
+    scale_y_continuous(limits=c(30,42), breaks = seq(0,42, by = 1)) +
+    labs(y="Mean Age") +
+    theme_bw()
+
+
+# HP projection with collapsed ages by sex
+collapse_ages(df) %>%
+    ggplot(aes(x=Year, y=round(value), fill=forcats::fct_rev(Age), label=round(value))) +
+    geom_bar(position="stack", stat="identity") +
+    scale_x_continuous(breaks = c(2010,2015,2020,2025,2030,2035,2040)) +
+    geom_text(size = 3, position = position_stack(vjust = 0.5)) +
+    labs(fill="Age Group", y="Population") +
+    theme_bw() +
+    facet_wrap(~Sex)
