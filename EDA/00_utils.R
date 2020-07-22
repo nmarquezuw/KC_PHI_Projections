@@ -244,3 +244,76 @@ download_kc_age_sex_projections <- function() {
     # return the clean data frame
     clean_kc_df
 }
+
+
+# required packages: sf, tidycensus
+
+#' Download the Median Household Income data from ACS
+#' 
+#' @description download the Median Household Income data from ACS
+#' 
+#' @param years required years in a list
+#' @param geography_level geography of the data: "tract", "county", "state"
+#' @param get_geometry whether to get the geometry
+#' @param survey "acs5" or "acs1"
+#' @return clean data frame
+download_kc_median_household_income <- function(
+    years,
+    geography_level,
+    get_geometry = TRUE,
+    survey = "acs5"
+){
+    census_api_key("c7428bd1a306689b9ca040ae057d22a1cb688e8c")
+    options(tigris_use_cache = TRUE)
+
+    var_selection <- c(
+        Overall = "B19013_001",
+        White = "B19013A_001",
+        Black = "B19013B_001",
+        AIAN = "B19013C_001",
+        Asian = "B19013D_001",
+        NHOPI = "B19013E_001",
+        Other = "B19013F_001",
+        'Two or More Races' = "B19013G_001"
+    )
+    
+    df <- get_acs(
+        geography_level,
+        variables = var_selection,
+        year = years[1],
+        state = "WA",
+        county = "King",
+        geometry = get_geometry,
+        survey = survey
+    ) %>%
+        mutate(Year=years[1]) %>%
+        select(-moe)
+    
+    if (!is.na(years[2])) {
+        for (yr in years[2:length(years)]) {
+            df <- rbind(
+                df,
+                get_acs(
+                    geography_level,
+                    variables = var_selection,
+                    year = yr,
+                    state = "WA",
+                    county = "King",
+                    geometry = get_geometry,
+                    survey = survey
+                ) %>%
+                    mutate(Year=yr) %>%
+                    select(-moe)
+            )
+        }
+    }
+    
+    colnames(df)[3] = "Race"
+    
+    clean_df <- df %>%
+        group_by(GEOID, NAME, Race, Year) %>%
+        summarize('Median Household Income'=mean(estimate, na.rm = TRUE)) %>%
+        mutate(Year=as.integer(Year))
+    
+    clean_df
+}
