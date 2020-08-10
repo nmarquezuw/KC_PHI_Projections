@@ -1,0 +1,53 @@
+---
+title: "Inoue Smoothing"
+author: "Neal Marquez"
+date: "8/5/2020"
+output: html_document
+---
+
+## Tract Level Smoothing
+
+$$
+i = \text{tract} \\
+\text{CCR}_{i} = \frac{q_i}{p_i} \\
+\hat{\text{CCR}}_i = \underbrace{\frac{\sqrt{p_i}}{\sqrt{p_i} + \sqrt{P}}}_{\text{Tract weight}} *  \frac{q_i}{p_i} + 
+\underbrace{\frac{\sqrt{P}}{\sqrt{p_i} + \sqrt{P}}}_{\text{County weight}} *  \frac{Q}{P}
+$$
+Note that sometimes $p_i$ can be zero giving us a non-finite value for the first term on the right hand side of the equation. When, this happens I propose we change the first term to zero thus giving that tract a CCR value equal to that of the county.
+
+## Tract Race Speific Smoothing
+
+$$
+j = \text{race} \\
+\hat{\text{CCR}}_j = \underbrace{\frac{\sqrt{p_j}}{\sqrt{p_j} + \sqrt{P}}}_{\text{Race weight}} *  \frac{q_j}{p_j} + 
+\underbrace{\frac{\sqrt{P}}{\sqrt{p_j} + \sqrt{P}}}_{\text{County weight}} *  \frac{Q}{P} \\
+\hat{\text{CCR}}_{ij} = \underbrace{\frac{\sqrt{p_{ij}}}{\sqrt{p_{ij}} + \sqrt{p_j}}}_{\text{Tract Race weight}} *  \frac{q_{ij}}{p_{ij}} + 
+\underbrace{\frac{\sqrt{p_j}}{\sqrt{p_{ij}} + \sqrt{p_j}}}_{\text{Smoothed Race weight}} * \hat{\text{CCR}}_j
+$$
+
+## Calculations with age and year notation  
+
+
+\begin{align*}
+i &= \text{tract} \\
+a &= \text{age} \\
+y &= \text{year} \\
+\underbrace{_5\textbf{CCR}_{a}}_{\text{County Estimate}} &= \frac{_5\boldsymbol{P}_{a+5, y+5}}{_5\boldsymbol{P}_{a, y}} \\
+
+\underbrace{_5\text{CCR}_{a,i}}_{\substack{\text{Direct} \\ \text{Tract Estimate}}} &= \frac{_5P_{a+5, i, y+5}}{_5P_{a, i, y}} \\
+
+\underbrace{_5\hat{\text{CCR}}_{a,i}}_{\substack{\text{Smoothed} \\ \text{Tract Estimate}}} &= \underbrace{\frac{\sqrt{_5P_{a, i, y}}}{\sqrt{_5P_{a, i, y}} + \sqrt{_5\boldsymbol{P}_{a, y}}}}_{\text{Tract weight}} * ~_5\text{CCR}_{a,i} + \underbrace{\frac{\sqrt{_5\boldsymbol{P}_{a, y}}}{\sqrt{_5P_{a, i, y}} + \sqrt{_5\boldsymbol{P}_{a, y}}}}_{\text{County weight}} *  ~_5\textbf{CCR}_{a}
+\end{align*}
+
+
+\begin{align*}
+j &= \text{race} \\
+\underbrace{_5\textbf{CCR}_{a}}_{\text{County Estimate}} &= \frac{_5\boldsymbol{P}_{a+5, y+5}}{_5\boldsymbol{P}_{a, y}} \\
+
+\underbrace{_5\text{CCR}_{a,j}}_{\substack{\text{Direct} \\ \text{Race Estimate}}} &= \frac{_5P_{a+5, j, y+5}}{_5P_{a, j, y}} \\
+
+\underbrace{_5\hat{\text{CCR}}_{a,j}}_{\substack{\text{Smoothed} \\ \text{Race Estimate}}} &= \underbrace{\frac{\sqrt{_5P_{a, j, y}}}{\sqrt{_5P_{a, j, y}} + \sqrt{_5\boldsymbol{P}_{a, y}}}}_{\text{Race weight}} * ~_5\text{CCR}_{a,j} + \underbrace{\frac{\sqrt{_5\boldsymbol{P}_{a, y}}}{\sqrt{_5P_{a, j, y}} + \sqrt{_5\boldsymbol{P}_{a, y}}}}_{\text{County weight}} *  ~_5\textbf{CCR}_{a} \\
+
+\underbrace{_5\hat{\text{CCR}}_{a,i,j}}_{\substack{\text{Smoothed} \\ \text{Race Tract} \\ \text{Estimate}}} &= \underbrace{\frac{\sqrt{_5P_{a, j, i, y}}}{\sqrt{_5P_{a, j, i, y}} + \sqrt{_5P_{a, j, y}}}}_{\text{Tract-Race weight}} * ~_5\text{CCR}_{a,i,j} + \underbrace{\frac{\sqrt{_5P_{a, j, y}}}{\sqrt{_5P_{a, j, i, y}} + \sqrt{_5P_{a, j, y}}}}_{\text{County-Race weight}} *  ~_5\hat{\text{CCR}}_{a,j}
+\end{align*}
+
