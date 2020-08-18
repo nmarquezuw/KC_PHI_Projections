@@ -98,6 +98,9 @@ factor_ages <- function(x){
 #'
 
 download_kc_race_data <- function(tract = TRUE, collapse_hispanic = TRUE){
+    
+    options(tigris_use_cache=TRUE)
+    
     tf <- tempfile(fileext = ".xlsx")
     
     lks <- "https://www.ofm.wa.gov/sites/default/files/public/" %>%
@@ -171,7 +174,7 @@ download_kc_race_data <- function(tract = TRUE, collapse_hispanic = TRUE){
 }
 
 
-# required packages: tidyverse, readxl
+#' required packages: tidyverse, readxl
 
 #' Download the most recent King County population forecast from WA OFM
 #' 
@@ -189,7 +192,7 @@ download_kc_age_sex_projections <- function() {
     
     tf <- tempfile(fileext = ".xlsx")
     "https://ofm.wa.gov/sites/default/files/public/dataresearch/pop/GMA/projections17/gma_2017_age_sex_med.xlsx" %>%
-        download.file(tf)
+        download.file(tf, mode="wb")
     
     # read data from the .xlsx file
     DF <- read_excel(tf)
@@ -246,7 +249,7 @@ download_kc_age_sex_projections <- function() {
 }
 
 
-# required packages: sf, tidycensus
+#' required packages: sf, tidycensus
 
 #' Download the Median Household Income data from ACS
 #' 
@@ -313,4 +316,39 @@ download_median_household_income <- function(
         mutate(Year=as.integer(Year))
     
     clean_df
+}
+
+#' Required package: rgdal
+#' 
+#' Download King County census tract data from King Conty GIS Open Data Hub
+#' 
+#' @description create a SpatialPolygonsDataFrame by using the given
+#' data frame and the census tract geographies downloaded from King County
+#' GIS Open Data API.
+#' 
+#' @return SpatialPolygonsDataFrame with census tract geographies
+
+download_kc_geo_spdf <- function() {
+    # Census Tract data source from King County GIS Open Data API
+    # https://gis-kingcounty.opendata.arcgis.com/datasets/2010-census-tracts-for-king-county-conflated-to-parcels-major-waterbodies-erased-tracts10-shore-area?geometry=-125.956%2C46.738%2C-118.151%2C48.040
+    tf <- tempfile(fileext = ".json")
+    temp <- readLines("https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/census___base/MapServer/887/query?where=1%3D1&outFields=GEO_ID_TRT&outSR=4326&f=json")
+    write(temp, file = tf)
+    kc_tract <- readOGR(tf)
+    names(kc_tract@data)[names(kc_tract@data) == "GEO_ID_TRT"] <- "GEOID"
+    kc_tract
+}
+
+#' Required package: sp
+#' 
+#' Add a data frame of population stats to a SpatialPolygonsDataFrame
+#' @description merge a data frame of populations stats to a SpatialPolygonDataFrame
+#' based on GEOID
+#' 
+#' @param df data frame like object with a character column named "GEOID"
+#' @param spdf SpatialPolygonsDataFrame like object with a character column in its" data" field named "GEOID"
+#' @return SpatialPolygonsDataFrame whose "data" field added with the columns in "df"
+
+merge_df_spdf <- function(df, spdf) {
+    sp::merge(spdf, df, by = "GEOID", duplicateGeoms = TRUE)
 }
