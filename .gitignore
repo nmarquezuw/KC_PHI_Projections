@@ -6,7 +6,6 @@
 *.RData
 *.dcf
 *.io
-data/*
 plots/*
 
 # Example code in package build process
