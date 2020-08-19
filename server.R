@@ -175,10 +175,33 @@ server <- function(input, output, session) {
   })
 
   output$map <- renderLeaflet({
-    sp <- sp_reactive()
+    selected_df <- hp_proj %>%
+      filter(Year %in% 2020)
 
-    map <- sp %>%
-      leaflet() %>%
+    selected_df <- selected_df %>%
+      filter(
+        Sex %in% c("Female", "Male"),
+        Race %in% c("AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White"),
+        Age5 %in% c(
+          "15-19", "20-24", "25-29", "30-34",
+          "35-39", "40-44"
+        )
+      ) %>%
+      group_by(GEOID) %>%
+      summarize(value = sum(value))
+
+    sp <- merge_df_spdf(selected_df, kc_geo_spdf)
+
+    col_pal <- colorQuantile(
+      palette = "Blues",
+      domain = sp@data$value,
+      n = 5,
+      na.color = NA
+    )
+
+    legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
+
+    leaflet(sp) %>%
       addProviderTiles(
         providers$CartoDB.Positron,
         options = providerTileOptions(
@@ -189,11 +212,223 @@ server <- function(input, output, session) {
       setMaxBounds(
         -123.222921, 48.300822,
         -120.383728, 46.652146
+      ) %>%
+      addPolygons(
+        layerId = ~GEOID,
+        color = "#606060",
+        weight = 1,
+        smoothFactor = 0.5,
+        opacity = 0.9,
+        fillOpacity = 0.6,
+        fillColor = ~ col_pal(value),
+        highlightOptions = highlightOptions(
+          color = "white", weight = 2,
+          bringToFront = TRUE
+        ),
+        label = sprintf(
+          paste0(
+            "GEOID: <strong>%s</strong><br/>",
+            "Population: <strong>%g</strong>"
+          ),
+          sp$GEOID,
+          sp$value
+        ) %>%
+          lapply(htmltools::HTML),
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto"
+        )
+      ) %>%
+      addLegend(
+        pal = col_pal,
+        values = ~value,
+        opacity = 0.7,
+        labFormat = {
+          function(type, cuts, p) {
+            n <- length(cuts)
+            paste0(seq(20, 100, 20)[-n], "th PCTL (", as.integer(cuts)[-n], " - ", as.integer(cuts)[-1], ")")
+          }
+        },
+        title = "Population Count",
+        position = "bottomright"
+      ) %>%
+      addMarkers(
+        data = kc_public_clinics,
+        icon = makeIcon(
+          iconUrl = "https://img.icons8.com/metro/26/000000/hospital.png",
+          iconWidth = 15,
+          iconHeight = 15
+        ),
+        group = "Public Health Clinics (2018)",
+        popup = sprintf(
+          "Name: <strong>%s</strong></br>Address: %s</br>Zip Code: %s",
+          kc_public_clinics$NAME,
+          kc_public_clinics$ADDRESS,
+          kc_public_clinics$ZIPCODE
+        ) %>%
+          lapply(htmltools::HTML)
+      ) %>%
+      addMarkers(
+        data = kc_schools[[1]],
+        icon = makeIcon(
+          iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
+          iconWidth = 15,
+          iconHeight = 15
+        ),
+        group = paste(names(kc_schools)[1], "(2018)"),
+        popup = sprintf(
+          "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
+          kc_schools[[1]]$NAME,
+          kc_schools[[1]]$CODE,
+          kc_schools[[1]]$DISTRICT,
+          kc_schools[[1]]$ADDRESS,
+          kc_schools[[1]]$ZIPCODE
+        ) %>%
+          lapply(htmltools::HTML),
+        clusterOptions = TRUE
+      ) %>%
+      addMarkers(
+        data = kc_schools[[2]],
+        icon = makeIcon(
+          iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
+          iconWidth = 15,
+          iconHeight = 15
+        ),
+        group = paste(names(kc_schools)[2], "(2018)"),
+        popup = sprintf(
+          "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
+          kc_schools[[2]]$NAME,
+          kc_schools[[2]]$CODE,
+          kc_schools[[2]]$DISTRICT,
+          kc_schools[[2]]$ADDRESS,
+          kc_schools[[2]]$ZIPCODE
+        ) %>%
+          lapply(htmltools::HTML),
+        clusterOptions = TRUE
+      ) %>%
+      addMarkers(
+        data = kc_schools[[3]],
+        icon = makeIcon(
+          iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
+          iconWidth = 15,
+          iconHeight = 15
+        ),
+        group = paste(names(kc_schools)[3], "(2018)"),
+        popup = sprintf(
+          "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
+          kc_schools[[3]]$NAME,
+          kc_schools[[3]]$CODE,
+          kc_schools[[3]]$DISTRICT,
+          kc_schools[[3]]$ADDRESS,
+          kc_schools[[3]]$ZIPCODE
+        ) %>%
+          lapply(htmltools::HTML),
+        clusterOptions = TRUE
+      ) %>%
+      addMarkers(
+        data = kc_schools[[4]],
+        icon = makeIcon(
+          iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
+          iconWidth = 15,
+          iconHeight = 15
+        ),
+        group = paste(names(kc_schools)[4], "(2018)"),
+        popup = sprintf(
+          "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
+          kc_schools[[4]]$NAME,
+          kc_schools[[4]]$CODE,
+          kc_schools[[4]]$DISTRICT,
+          kc_schools[[4]]$ADDRESS,
+          kc_schools[[4]]$ZIPCODE
+        ) %>%
+          lapply(htmltools::HTML),
+        clusterOptions = TRUE
+      ) %>%
+      addMarkers(
+        data = kc_schools[[5]],
+        icon = makeIcon(
+          iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
+          iconWidth = 15,
+          iconHeight = 15
+        ),
+        group = paste(names(kc_schools)[5], "(2018)"),
+        popup = sprintf(
+          "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
+          kc_schools[[5]]$NAME,
+          kc_schools[[5]]$CODE,
+          kc_schools[[5]]$DISTRICT,
+          kc_schools[[5]]$ADDRESS,
+          kc_schools[[5]]$ZIPCODE
+        ) %>%
+          lapply(htmltools::HTML),
+        clusterOptions = TRUE
+      ) %>%
+      addMarkers(
+        data = kc_schools[[6]],
+        icon = makeIcon(
+          iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
+          iconWidth = 15,
+          iconHeight = 15
+        ),
+        group = paste(names(kc_schools)[6], "(2018)"),
+        popup = sprintf(
+          "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
+          kc_schools[[6]]$NAME,
+          kc_schools[[6]]$CODE,
+          kc_schools[[6]]$DISTRICT,
+          kc_schools[[6]]$ADDRESS,
+          kc_schools[[6]]$ZIPCODE
+        ) %>%
+          lapply(htmltools::HTML),
+        clusterOptions = TRUE
+      ) %>%
+      addMarkers(
+        data = kc_schools[[7]],
+        icon = makeIcon(
+          iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
+          iconWidth = 15,
+          iconHeight = 15
+        ),
+        group = paste(names(kc_schools)[7], "(2018)"),
+        popup = sprintf(
+          "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
+          kc_schools[[7]]$NAME,
+          kc_schools[[7]]$CODE,
+          kc_schools[[7]]$DISTRICT,
+          kc_schools[[7]]$ADDRESS,
+          kc_schools[[7]]$ZIPCODE
+        ) %>%
+          lapply(htmltools::HTML),
+        clusterOptions = TRUE
+      ) %>%
+      addLayersControl(
+        overlayGroups = c(
+          "Public Health Clinics (2018)",
+          paste(names(kc_schools), "(2018)")
+        ),
+        options = layersControlOptions(collapsed = TRUE)
+      ) %>%
+      hideGroup(
+        c(
+          "Public Health Clinics (2018)",
+          paste(names(kc_schools), "(2018)")
+        )
       )
+  })
 
+  observe({
+    sp <- sp_reactive()
+
+    proxy_map <- leafletProxy(
+      "map",
+      data = sp
+    ) %>%
+      clearShapes() %>%
+      clearControls()
 
     if (all_selected()) {
-      map <- map %>%
+      proxy_map <- proxy_map %>%
         addPolygons(
           layerId = ~GEOID,
           color = "#606060",
@@ -241,7 +476,7 @@ server <- function(input, output, session) {
 
       legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
 
-      map <- map %>%
+      proxy_map <- proxy_map %>%
         addPolygons(
           layerId = ~GEOID,
           color = "#606060",
@@ -281,82 +516,27 @@ server <- function(input, output, session) {
         )
     }
 
-    map <- map %>%
-      addMarkers(
-        data = kc_public_clinics,
-        icon = makeIcon(
-          iconUrl = "https://img.icons8.com/metro/26/000000/hospital.png",
-          iconWidth = 15,
-          iconHeight = 15
-        ),
-        group = "Public Health Clinics (2018)",
-        popup = sprintf(
-          "Name: <strong>%s</strong></br>Address: %s</br>Zip Code: %s",
-          kc_public_clinics$NAME,
-          kc_public_clinics$ADDRESS,
-          kc_public_clinics$ZIPCODE
-        ) %>%
-          lapply(htmltools::HTML)
-      )
-
-    for (i in 1:length(kc_schools)) {
-      map <- map %>%
-        addMarkers(
-          data = kc_schools[[i]],
-          icon = makeIcon(
-            iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
-            iconWidth = 15,
-            iconHeight = 15
-          ),
-          group = paste(names(kc_schools)[i], "(2018)"),
-          popup = sprintf(
-            "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
-            kc_schools[[i]]$NAME,
-            kc_schools[[i]]$CODE,
-            kc_schools[[i]]$DISTRICT,
-            kc_schools[[i]]$ADDRESS,
-            kc_schools[[i]]$ZIPCODE
-          ) %>%
-            lapply(htmltools::HTML),
-          clusterOptions = TRUE
-        )
-    }
-
-    map <- map %>%
-      addLayersControl(
-        overlayGroups = c(
-          "Public Health Clinics (2018)",
-          paste(names(kc_schools), "(2018)")
-        ),
-        options = layersControlOptions(collapsed = TRUE)
-      ) %>%
-      hideGroup(
-        c(
-          "Public Health Clinics (2018)",
-          paste(names(kc_schools), "(2018)")
-        )
-      )
-
-    map
+    proxy_map
   })
+
 
   #-----------------plot----------
   clicked_tract <- reactiveValues(df = NULL)
 
   observeEvent(input$map_click,
-    {
-      clicked_tract$df <- NULL
-    },
-    priority = 100
+               {
+                 clicked_tract$df <- NULL
+               },
+               priority = 100
   )
 
 
   observeEvent(input$map_shape_click,
-    {
-      clicked_tract$df <- hp_proj %>%
-        filter(GEOID == input$map_shape_click$id)
-    },
-    priority = 99
+               {
+                 clicked_tract$df <- hp_proj %>%
+                   filter(GEOID == input$map_shape_click$id)
+               },
+               priority = 99
   )
 
   df_reactive <- reactive({
