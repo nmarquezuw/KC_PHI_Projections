@@ -40,7 +40,7 @@ radioTooltip <- function(id, choice, title, placement = "bottom", trigger = "hov
 #------------shiny ui--------
 ui <- dashboardPage(
   dashboardHeader(title = "PHI INTERACTIVE VIZ"),
-  
+
   dashboardSidebar(
     sidebarMenu(
       menuItem(
@@ -142,7 +142,11 @@ ui <- dashboardPage(
               leafletOutput(
                 "map",
                 height = 480
-              )
+              ),
+
+              shinyjs::useShinyjs(),
+              shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px;", addSpinner(div(), spin = "circle", color = "black")))
+
             ),
 
             box(
