@@ -3,7 +3,6 @@ library(tidyverse)
 library(readxl)
 library(sf)
 library(viridisLite)
-library(mapview)
 library(jsonlite)
 library(plotly)
 library(dplyr)
@@ -148,6 +147,33 @@ ui <- dashboardPage(
               width = NULL,
               height = 90,
 
+              # tags$head(tags$style(HTML("#measure_div .tooltip {width: 350px; }"))),
+
+              # div(
+              #   id = "measure_div",
+              #   
+              #   radioButtons(
+              #     inputId = "measure_type",
+              #     label = "Measure",
+              #     choices = c("Count", "Percentage"),
+              #     selected = "Count"
+              #   ),
+              #   
+              #   radioTooltip(
+              #     id = "measure_type",
+              #     choice = "Percentage",
+              #     title = "<img src=\"percentage_explanation.png\"/>",
+              #     # title = tags$img(
+              #     #     src = "percentage_explanation.gif"
+              #     # ),
+              #     #title = "<strong>Population with the selected characteristics</strong> (i.e. Sex, Age, Race/Ethnicity) divided by the <strong>total population of the Corresponding Geography</strong>",
+              #     placement = "bottom",
+              #     options = list(
+              #       html = TRUE
+              #     )
+              #   )
+              # )
+
               radioButtons(
                 inputId = "measure_type",
                 label = "Measure",
@@ -158,14 +184,14 @@ ui <- dashboardPage(
               radioTooltip(
                 id = "measure_type",
                 choice = "Percentage",
-                # title = "<img src=\"percentage_explanation.gif\"/>",
+                title = "<img src=\"percentage_explanation.png\"/>",
                 # title = tags$img(
                 #     src = "percentage_explanation.gif"
                 # ),
-                title = "<strong>Population with the selected characteristics</strong> (i.e. Sex, Age, Race/Ethnicity) divided by the <strong>total population of the Corresponding Geography</strong>",
-                placement = "bottom",
+                #title = "<strong>Population with the selected characteristics</strong> (i.e. Sex, Age, Race/Ethnicity) divided by the <strong>total population of the Corresponding Geography</strong>",
+                placement = "left",
                 options = list(
-                    html = TRUE
+                  html = TRUE
                 )
               )
             ),
@@ -220,19 +246,19 @@ ui <- dashboardPage(
                 choices = c("All", "AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White"),
                 selected = "All"
               ),
-              
+
               radioTooltip(
-                  id = "race",
-                  choice = "AIAN",
-                  title = "American Indian and Alaska Native",
-                  placement = "bottom"
+                id = "race",
+                choice = "AIAN",
+                title = "American Indian and Alaska Native",
+                placement = "bottom"
               ),
-              
+
               radioTooltip(
-                  id = "race",
-                  choice = "NHOPI",
-                  title = "Native Hawaiian or Other Pacific Islander",
-                  placement = "bottom"
+                id = "race",
+                choice = "NHOPI",
+                title = "Native Hawaiian or Other Pacific Islander",
+                placement = "bottom"
               )
             )
           )
@@ -577,7 +603,7 @@ server <- function(input, output, session) {
     }
 
     df <- df %>%
-        select(-GEOID)
+      select(-GEOID)
 
     if (measure_reactive() == "Count") {
       df <- df %>%
@@ -607,7 +633,7 @@ server <- function(input, output, session) {
       df %>%
         mutate(Race = "Total") %>%
         group_by(Year, Race) %>%
-        summarize(value=sum(value))%>%
+        summarize(value = sum(value)) %>%
         arrange(Year),
       df %>%
         arrange(Race, Year)
@@ -624,12 +650,12 @@ server <- function(input, output, session) {
       type = "scatter",
       mode = "lines"
     ) %>%
-        layout(
-            xaxis = list(
-                range = c(2019, 2045)
-            ),
-            yaxis = list(rangemode = "tozero")
-        )
+      layout(
+        xaxis = list(
+          range = c(2019, 2045)
+        ),
+        yaxis = list(rangemode = "tozero")
+      )
 
     col_pal <- c(
       c(
