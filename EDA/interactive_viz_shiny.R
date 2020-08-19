@@ -898,6 +898,9 @@ server <- function(input, output, session) {
     clicked_tract$df <- NULL
   })
   
+  outputOptions(output, "map", suspendWhenHidden = FALSE)
+  outputOptions(output, "plot", suspendWhenHidden = FALSE)
+
 }
 
 shinyApp(ui, server)
