@@ -136,7 +136,10 @@ ui <- dashboardPage(
                 "plot",
                 height = 230
               ),
-              helpText("Click on a tract on the map above to see tract-level population")
+              helpText("Click on a tract on the map above to see tract-level population"),
+              
+              uiOutput("reset_chart_button")
+              
             )
           ),
           #----------options--------
@@ -146,33 +149,6 @@ ui <- dashboardPage(
             box(
               width = NULL,
               height = 90,
-              
-              # tags$head(tags$style(HTML("#measure_div .tooltip {width: 350px; }"))),
-              
-              # div(
-              #   id = "measure_div",
-              #
-              #   radioButtons(
-              #     inputId = "measure_type",
-              #     label = "Measure",
-              #     choices = c("Count", "Percentage"),
-              #     selected = "Count"
-              #   ),
-              #
-              #   radioTooltip(
-              #     id = "measure_type",
-              #     choice = "Percentage",
-              #     title = "<img src=\"percentage_explanation.png\"/>",
-              #     # title = tags$img(
-              #     #     src = "percentage_explanation.gif"
-              #     # ),
-              #     #title = "<strong>Population with the selected characteristics</strong> (i.e. Sex, Age, Race/Ethnicity) divided by the <strong>total population of the Corresponding Geography</strong>",
-              #     placement = "bottom",
-              #     options = list(
-              #       html = TRUE
-              #     )
-              #   )
-              # )
               
               radioButtons(
                 inputId = "measure_type",
@@ -185,11 +161,7 @@ ui <- dashboardPage(
                 id = "measure_type",
                 choice = "Percentage",
                 title = "<img src=\"percentage_explanation.png\"/>",
-                # title = tags$img(
-                #     src = "percentage_explanation.gif"
-                # ),
-                # title = "<strong>Population with the selected characteristics</strong> (i.e. Sex, Age, Race/Ethnicity) divided by the <strong>total population of the Corresponding Geography</strong>",
-                placement = "left",
+                placement = "bottom",
                 options = list(
                   html = TRUE
                 )
@@ -912,6 +884,20 @@ server <- function(input, output, session) {
     
     P
   })
+  
+  output$reset_chart_button <- renderUI(
+    if (!is.null(clicked_tract$df)) {
+      actionButton(
+        inputId = "reset_line_chart",
+        label = "Go Back to County-Level Data"
+      )
+    }
+  )
+  
+  observeEvent(input$reset_line_chart, {
+    clicked_tract$df <- NULL
+  })
+  
 }
 
 shinyApp(ui, server)
