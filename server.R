@@ -676,4 +676,18 @@ server <- function(input, output, session) {
 
     P
   })
+
+  output$reset_chart_button <- renderUI(
+    if (!is.null(clicked_tract$df)) {
+      actionButton(
+        inputId = "reset_line_chart",
+        label = "Go Back to County-Level Data"
+      )
+    }
+  )
+
+  observeEvent(input$reset_line_chart, {
+    clicked_tract$df <- NULL
+  })
+
 }

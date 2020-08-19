@@ -37,8 +37,6 @@ radioTooltip <- function(id, choice, title, placement = "bottom", trigger = "hov
   htmltools::attachDependencies(bsTag, shinyBS:::shinyBSDep)
 }
 
-#------------shiny------------------
-
 #------------shiny ui--------
 ui <- dashboardPage(
   dashboardHeader(title = "PHI INTERACTIVE VIZ"),
@@ -113,7 +111,10 @@ ui <- dashboardPage(
                 "plot",
                 height = 230
               ),
-              helpText("Click on a tract on the map above to see tract-level population")
+              helpText("Click on a tract on the map above to see tract-level population"),
+
+              uiOutput("reset_chart_button")
+
             )
           ),
           #----------options--------
@@ -135,7 +136,7 @@ ui <- dashboardPage(
                 id = "measure_type",
                 choice = "Percentage",
                 title = "<img src=\"percentage_explanation.png\"/>",
-                placement = "left",
+                placement = "bottom",
                 options = list(
                   html = TRUE
                 )
