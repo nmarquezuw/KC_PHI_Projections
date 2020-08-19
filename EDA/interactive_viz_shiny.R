@@ -13,6 +13,7 @@ library(sp)
 library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
+library(shinycssloaders)
 library(shinyBS)
 library(leaflet)
 source("./00_utils.R")
@@ -167,7 +168,11 @@ ui <- dashboardPage(
               leafletOutput(
                 "map",
                 height = 480
-              )
+              ),
+              
+              shinyjs::useShinyjs(),
+              shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px;", addSpinner(div(), spin = "circle", color = "black")))
+              
             ),
             
             box(
@@ -666,6 +671,8 @@ server <- function(input, output, session) {
   })
   
   observe({
+    shinyjs::showElement(id = 'loading')
+    
     sp <- sp_reactive()
     
     proxy_map <- leafletProxy(
@@ -764,6 +771,7 @@ server <- function(input, output, session) {
         )
     }
     
+    shinyjs::hideElement(id = 'loading')
     proxy_map
   })
   
