@@ -41,7 +41,10 @@ radioTooltip <- function(id, choice, title, placement = "bottom", trigger = "hov
 ui <- dashboardPage(
   title = "Exploring Our Future - King County Forecasts to 2045",
 
-  header = dashboardHeader(title = " KC Forecast 2045"),
+  header = dashboardHeader(
+    title = "King County Forecasts to 2045",
+    titleWidth = 300
+  ),
 
   dashboardSidebar(
     sidebarMenu(
@@ -77,6 +80,10 @@ ui <- dashboardPage(
   ),
 
   dashboardBody(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+    ),
+
     tabItems(
       tabItem(
         tabName = "intro",
