@@ -69,7 +69,7 @@ ui <- dashboardPage(
   
   header = dashboardHeader(
     title = "King County Forecasts to 2045",
-    titleWidth = 300
+    titleWidth = 330
   ),
   
   dashboardSidebar(
