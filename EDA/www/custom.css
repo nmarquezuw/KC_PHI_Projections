@@ -1,0 +1,19 @@
+.sidebar {
+  position: fixed;
+}
+
+.skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
+    color: #fff;
+    background: #1e282c;
+    border-left-color: #3c8dbc;
+    width: 230px;
+}
+
+.main-header {
+  position: fixed;
+  width:100%;
+}
+
+.content {
+  margin-top: 50px;
+}
