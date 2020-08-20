@@ -19,7 +19,7 @@ library(leaflet)
 source("./00_utils.R")
 
 hp_proj <- read.csv(
-  file = "./data/tract_age5_race_sex_proj_2020_2045.csv",
+  file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
   colClasses = c("GEOID" = "character")
 )
 
@@ -65,7 +65,9 @@ radioTooltip <- function(id, choice, title, placement = "bottom", trigger = "hov
 
 #------------shiny ui--------
 ui <- dashboardPage(
-  dashboardHeader(title = "PHI INTERACTIVE VIZ"),
+  title = "Exploring Our Future - King County Forecasts to 2045",
+  
+  header = dashboardHeader(title = " KC Forecast 2045"),
   
   dashboardSidebar(
     sidebarMenu(
@@ -107,37 +109,43 @@ ui <- dashboardPage(
         
         tags$style(type='text/css', "p {font-size: 15px !important} "),
         
-        
-        h1("King County Population Projections Overview"),
-        p("With support from the Public Health Services Division of Seattle & King County and in partnership with the University of Washington’s Center for Studies in Demography and Ecology, the 2020 Population Health Initiative Applied Research Fellowship Program developed small area population projections at the Census tract and Health Reporting Area (HRA) levels for King County by age, race and ethnicity in 5 year intervals from 2020 to 2045. These projections use demographic data from the American Community Survey and the Decennial Census, along with existing population projections from the Washington Office of Financial Management (OFM) and Puget Sound Regional Council (PSRC)."),
+        h1(
+          "Exploring our Future - King County Forecasts to 2045",
+          align = "center"
+        ),
         br(),
         
-        h1("User Guide"),
+        
+        h2("King County Population Projections Overview"),
+        p(HTML("With support from the <a href='https://www.kingcounty.gov/depts/health.aspx'>Public Health Services Division of Seattle & King County</a> and in partnership with the  <a href='https://csde.washington.edu/'>University of Washington’s Center for Studies in Demography and Ecology</a>, the 2020 <a href='https://www.washington.edu/populationhealth/'>Population Health Initiative</a> Applied Research Fellowship Program developed small area population projections at the Census tract and Health Reporting Area (<a href='https://www.kingcounty.gov/depts/health/data/community-health-indicators/definitions.aspx'>HRA</a>) levels for King County by age, race and ethnicity in 5 year intervals from 2020 to 2045. These projections use demographic data from the <a href='https://www.census.gov/programs-surveys/acs'>American Community Survey</a> and the <a href='https://www.census.gov/'>Decennial Census</a>, along with existing population projections from the <a href='https://www.ofm.wa.gov/'>Washington Office of Financial Management (OFM)</a> and  <a href='https://www.psrc.org/'>Puget Sound Regional Council (PSRC)</a>.")),
+        br(),
+        
+        h2("User Guide"),
         p("The interactive mapping tool can be used to explore the changing dynamics of King County’s population over time by age, race and ethnicity, within census tracts and health reporting areas. For example, the [name of tool] let’s you see how King County’s population is expected to grow until 2045 if current trends in fertility, mortality, and migration continue. To explore the [name of tool], click the Interactive Map tab on the left side of this page."),
         br(),
         
-        h3(tags$i("Measure")),
+        h4(tags$i("Measure")),
         p("To begin, select the measure by which you want to view the population totals by tract. Selecting the count measure will provide a projected population count within each census tract. This population count will be based on the selection of year, sex, age, and race groups chosen, as described below. "),
         p("Selecting the percentage measure will provide the percentage of the selected group’s population divided by the total population of the corresponding geography. Note the legend icon in the bottom right corner of the map matches your selection accordingly, as does the y-axis of the line graph."),
         br(),
         
-        h3(tags$i("Year and Sex")),
+        h4(tags$i("Year and Sex")),
         p("To display projections by year, use the drop down menu to select the year of interest. To explore projections by sex choose the female, male or both option."),
         br(),
         
-        h3(tags$i("Age")),
+        h4(tags$i("Age")),
         p("The age feature allows users to display projections by specific age ranges in 5 year increments. Use the toggle feature to set a minimum and maximum age range (0 to 85+), or click the select all option to display projections across all ages. "),
         br(),
         
-        h3(tags$i("Race and Ethnicity")),
+        h4(tags$i("Race and Ethnicity")),
         p("Projections can be displayed by specific race and ethnic groups by selecting from the provided race and ethnic categories. Selecting the all option provides projections across all races and ethnicities."),
         br(),
         
-        h3(tags$i("Line Graph")),
+        h4(tags$i("Line Graph")),
         p("The line graph feature provides an additional visual for understanding how different race and ethnic groups are changing over time. You may select multiple race and ethnic groups to view at once. Be sure to deselect when you no longer want to view a particular group in the line graph visual. "),
         br(),
         
-        h3(tags$i("Map")),
+        h4(tags$i("Map")),
         p("All of the above selections are reflected in the map feature. Click on the map for detailed information by census tract. Additionally, the layers icon in the top right corner of the map allows the user to overlay multiple, current county facilities across all projections over time. "),
         br(),
         
@@ -167,7 +175,7 @@ ui <- dashboardPage(
               
               leafletOutput(
                 "map",
-                height = 480
+                height = 500
               ),
               
               shinyjs::useShinyjs(),
@@ -181,7 +189,8 @@ ui <- dashboardPage(
                 "plot",
                 height = 230
               ),
-              helpText("Click on a tract on the map above to see tract-level population"),
+              helpText("*Click on a tract on the map above to see tract-level population."),
+              helpText("**Click on a name in the legend on the right to show the line for the corresponding race/ethnicity."),
               
               uiOutput("reset_chart_button")
               
@@ -190,69 +199,6 @@ ui <- dashboardPage(
           #----------options--------
           column(
             width = 3,
-            
-            box(
-              width = NULL,
-              height = 90,
-              
-              radioButtons(
-                inputId = "measure_type",
-                label = "Measure",
-                choices = c("Count", "Percentage"),
-                selected = "Count"
-              ),
-              
-              radioTooltip(
-                id = "measure_type",
-                choice = "Percentage",
-                title = "<img src=\"percentage_explanation.png\"/>",
-                placement = "bottom",
-                options = list(
-                  html = TRUE
-                )
-              )
-            ),
-            
-            box(
-              width = NULL,
-              height = 90,
-              
-              selectInput(
-                inputId = "year",
-                label = "Year",
-                choices = seq(2020, 2045, 5),
-                selected = 2020
-              )
-            ),
-            
-            box(
-              width = NULL,
-              height = 120,
-              
-              radioButtons(
-                inputId = "sex",
-                label = "Sex",
-                choices = c("Female", "Male", "Both"),
-                selected = "Both"
-              )
-            ),
-            
-            box(
-              width = NULL,
-              
-              sliderTextInput(
-                inputId = "age",
-                label = "Age",
-                choices = c(seq(0, 85, 5), "85+"),
-                selected = c("15", "45"),
-                grid = TRUE
-              ),
-              
-              actionButton(
-                inputId = "all_age",
-                label = "Select All"
-              )
-            ),
             
             box(
               width = NULL,
@@ -277,7 +223,83 @@ ui <- dashboardPage(
                 title = "Native Hawaiian or Other Pacific Islander",
                 placement = "bottom"
               )
+            ),
+            
+            
+            box(
+              width = NULL,
+              
+              sliderTextInput(
+                inputId = "age",
+                label = "Age",
+                choices = c(seq(0, 85, 5), "85+"),
+                selected = c("15", "45"),
+                grid = TRUE
+              ),
+              
+              actionButton(
+                inputId = "all_age",
+                label = "Select All"
+              )
+            ),
+            
+            
+            box(
+              width = NULL,
+              height = 120,
+              
+              radioButtons(
+                inputId = "sex",
+                label = "Sex",
+                choices = c("Female", "Male", "Both"),
+                selected = "Both"
+              )
+            ),
+            
+            box(
+              width = NULL,
+              
+              sliderInput(
+                inputId = "year",
+                label = "Year",
+                min = 2000,
+                max = 2045,
+                value = 2020,
+                step = 5,
+                sep = ""
+              ),
+              
+              bsTooltip(
+                id = "year",
+                title = "<strong>Our population forecasts start from 2020</strong>; population data before 2020 are OFM estimates.",
+                options = list(
+                  html = TRUE
+                )
+              )
+            ),
+            
+            box(
+              width = NULL,
+              height = 90,
+              
+              radioButtons(
+                inputId = "measure_type",
+                label = "Measure",
+                choices = c("Count", "Percentage"),
+                selected = "Count"
+              ),
+              
+              radioTooltip(
+                id = "measure_type",
+                choice = "Percentage",
+                title = "<img src=\"percentage_explanation.png\"/>",
+                placement = "bottom",
+                options = list(
+                  html = TRUE
+                )
+              )
             )
+            
           )
         )
       ),
@@ -500,7 +522,12 @@ server <- function(input, output, session) {
         labFormat = {
           function(type, cuts, p) {
             n <- length(cuts)
-            paste0(seq(20, 100, 20)[-n], "th PCTL (", as.integer(cuts)[-n], " - ", as.integer(cuts)[-1], ")")
+            lower <- as.integer(cuts)[-n]
+            if (-n != 1) {
+              lower <- as.integer(cuts)[-n] + 1
+            }
+            upper <- as.integer(cuts)[-1]
+            paste0(seq(20, 100, 20)[-n], "th PCTL (", lower, " - ", upper, ")")
           }
         },
         title = "Population Count",
@@ -771,8 +798,9 @@ server <- function(input, output, session) {
         )
     }
     
+    Sys.sleep(1)
+    
     shinyjs::hideElement(id = 'loading')
-    proxy_map
   })
   
   
@@ -851,10 +879,22 @@ server <- function(input, output, session) {
       mode = "lines"
     ) %>%
       layout(
-        xaxis = list(
-          range = c(2019, 2045)
-        ),
-        yaxis = list(rangemode = "tozero")
+        yaxis = list(rangemode = "tozero"),
+        shapes = list(
+          list(
+            type = "line",
+            y0 = 0, 
+            y1 = 1, 
+            yref = "paper",
+            x0 = 2020, 
+            x1 = 2020, 
+            line = list(
+              dash = "dash",
+              width = 2,
+              color = "black"
+            )
+          )
+        )
       )
     
     col_pal <- c(

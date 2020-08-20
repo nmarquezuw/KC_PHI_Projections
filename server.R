@@ -18,7 +18,7 @@ library(leaflet)
 source("./00_utils.R")
 
 hp_proj <- read.csv(
-  file = "./data/tract_age5_race_sex_proj_2020_2045.csv",
+  file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
   colClasses = c("GEOID" = "character")
 )
 
@@ -248,7 +248,12 @@ server <- function(input, output, session) {
         labFormat = {
           function(type, cuts, p) {
             n <- length(cuts)
-            paste0(seq(20, 100, 20)[-n], "th PCTL (", as.integer(cuts)[-n], " - ", as.integer(cuts)[-1], ")")
+            lower <- as.integer(cuts)[-n]
+            if (-n != 1) {
+              lower <- as.integer(cuts)[-n] + 1
+            }
+            upper <- as.integer(cuts)[-1]
+            paste0(seq(20, 100, 20)[-n], "th PCTL (", lower, " - ", upper, ")")
           }
         },
         title = "Population Count",
@@ -519,8 +524,9 @@ server <- function(input, output, session) {
         )
     }
 
+    Sys.sleep(1)
+
     shinyjs::hideElement(id = 'loading')
-    proxy_map
   })
 
 
@@ -599,10 +605,22 @@ server <- function(input, output, session) {
       mode = "lines"
     ) %>%
       layout(
-        xaxis = list(
-          range = c(2019, 2045)
-        ),
-        yaxis = list(rangemode = "tozero")
+        yaxis = list(rangemode = "tozero"),
+        shapes = list(
+          list(
+            type = "line",
+            y0 = 0,
+            y1 = 1,
+            yref = "paper",
+            x0 = 2020,
+            x1 = 2020,
+            line = list(
+              dash = "dash",
+              width = 2,
+              color = "black"
+            )
+          )
+        )
       )
 
     col_pal <- c(
