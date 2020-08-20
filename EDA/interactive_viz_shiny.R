@@ -66,12 +66,12 @@ radioTooltip <- function(id, choice, title, placement = "bottom", trigger = "hov
 #------------shiny ui--------
 ui <- dashboardPage(
   title = "Exploring Our Future - King County Forecasts to 2045",
-  
+
   header = dashboardHeader(
     title = "King County Forecasts to 2045",
     titleWidth = 330
   ),
-  
+
   dashboardSidebar(
     sidebarMenu(
       menuItem(
@@ -90,13 +90,13 @@ ui <- dashboardPage(
         # icon = icon("dashboard")
       )
     ),
-    
+
     img(
       src = "uw_logo.png",
       height = "45px",
       style = "position: fixed; left: 10px; bottom: 13px;"
     ),
-    
+
     img(
       src = "csde_logo.gif",
       height = "50px",
@@ -104,92 +104,92 @@ ui <- dashboardPage(
     ),
     collapsed = FALSE
   ),
-  
+
   dashboardBody(
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
-    
+
     tabItems(
       tabItem(
         tabName = "intro",
-        
+
         tags$style(type='text/css', "p {font-size: 15px !important} "),
-        
+
         h1(
           "Exploring our Future - King County Forecasts to 2045",
           align = "center"
         ),
         br(),
-        
-        
+
+
         h2("King County Population Projections Overview"),
         p(HTML("With support from the <a href='https://www.kingcounty.gov/depts/health.aspx'>Public Health Services Division of Seattle & King County</a> and in partnership with the  <a href='https://csde.washington.edu/'>University of Washington’s Center for Studies in Demography and Ecology</a>, the 2020 <a href='https://www.washington.edu/populationhealth/'>Population Health Initiative</a> Applied Research Fellowship Program developed small area population projections at the Census tract and Health Reporting Area (<a href='https://www.kingcounty.gov/depts/health/data/community-health-indicators/definitions.aspx'>HRA</a>) levels for King County by age, race and ethnicity in 5 year intervals from 2020 to 2045. These projections use demographic data from the <a href='https://www.census.gov/programs-surveys/acs'>American Community Survey</a> and the <a href='https://www.census.gov/'>Decennial Census</a>, along with existing population projections from the <a href='https://www.ofm.wa.gov/'>Washington Office of Financial Management (OFM)</a> and  <a href='https://www.psrc.org/'>Puget Sound Regional Council (PSRC)</a>.")),
         br(),
-        
+
         h2("User Guide"),
         p("The interactive mapping tool can be used to explore the changing dynamics of King County’s population over time by age, race and ethnicity, within census tracts and health reporting areas. For example, the [name of tool] let’s you see how King County’s population is expected to grow until 2045 if current trends in fertility, mortality, and migration continue. To explore the [name of tool], click the Interactive Map tab on the left side of this page."),
         br(),
-        
+
         h4(tags$i("Measure")),
         p("To begin, select the measure by which you want to view the population totals by tract. Selecting the count measure will provide a projected population count within each census tract. This population count will be based on the selection of year, sex, age, and race groups chosen, as described below. "),
         p("Selecting the percentage measure will provide the percentage of the selected group’s population divided by the total population of the corresponding geography. Note the legend icon in the bottom right corner of the map matches your selection accordingly, as does the y-axis of the line graph."),
         br(),
-        
+
         h4(tags$i("Year and Sex")),
         p("To display projections by year, use the drop down menu to select the year of interest. To explore projections by sex choose the female, male or both option."),
         br(),
-        
+
         h4(tags$i("Age")),
         p("The age feature allows users to display projections by specific age ranges in 5 year increments. Use the toggle feature to set a minimum and maximum age range (0 to 85+), or click the select all option to display projections across all ages. "),
         br(),
-        
+
         h4(tags$i("Race and Ethnicity")),
         p("Projections can be displayed by specific race and ethnic groups by selecting from the provided race and ethnic categories. Selecting the all option provides projections across all races and ethnicities."),
         br(),
-        
+
         h4(tags$i("Line Graph")),
         p("The line graph feature provides an additional visual for understanding how different race and ethnic groups are changing over time. You may select multiple race and ethnic groups to view at once. Be sure to deselect when you no longer want to view a particular group in the line graph visual. "),
         br(),
-        
+
         h4(tags$i("Map")),
         p("All of the above selections are reflected in the map feature. Click on the map for detailed information by census tract. Additionally, the layers icon in the top right corner of the map allows the user to overlay multiple, current county facilities across all projections over time. "),
         br(),
-        
+
         h2("Assumptions"),
         p("Although population projections aim to provide important estimates for planners, service providers, researchers, and the general public, they are only a reflection of what the population could look like if current population trends continue. They are not determinative of the future. . Further, small area projections can be more uncertain and so less predictive than projections for larger areas and populations, and less accurate for the distant future. Like all forecasts, our projections reflect a number of assumptions about expected populations dynamics in King County over the forecast period."),
         br(),
-        
+
         h2("Methods"),
         p("The projections presented here use the Hamilton Perry method with smoothing (a variant of the cohort-component method) based on OFM’s 5-year age data by race, ethnicity, and sex at state, county, & tract level from [dates] as observed in data from the [date] American Community Survey and 2010 decennial census data. Projections were compared with OFM state-level population projections by sex, age, race and ethnicity from 2020 to 2045 and OFM county-level population projections by sex and age from 2020 to 2045."),
         br()
 
       ),
-      
-      
+
+
       tabItem(
         tabName = "viz_tab",
-        
+
         textOutput("warning"),
-        
+
         fluidRow(
           #----------viz------
           column(
             width = 9,
-            
+
             box(
               width = NULL,
-              
+
               leafletOutput(
                 "map",
                 height = 500
               ),
-              
+
               shinyjs::useShinyjs(),
               shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px;", addSpinner(div(), spin = "circle", color = "black")))
-              
+
             ),
-            
+
             box(
               width = NULL,
               plotlyOutput(
@@ -198,32 +198,32 @@ ui <- dashboardPage(
               ),
               helpText("*Click on a tract on the map above to see tract-level population."),
               helpText("**Click on a name in the legend on the right to show the line for the corresponding race/ethnicity."),
-              
+
               uiOutput("reset_chart_button")
-              
+
             )
           ),
           #----------options--------
           column(
             width = 3,
-            
+
             box(
               width = NULL,
-              
+
               radioButtons(
                 inputId = "race",
                 label = "Race and Ethnicity",
                 choices = c("All", "AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White"),
                 selected = "All"
               ),
-              
+
               radioTooltip(
                 id = "race",
                 choice = "AIAN",
                 title = "American Indian and Alaska Native",
                 placement = "bottom"
               ),
-              
+
               radioTooltip(
                 id = "race",
                 choice = "NHOPI",
@@ -231,11 +231,11 @@ ui <- dashboardPage(
                 placement = "bottom"
               )
             ),
-            
-            
+
+
             box(
               width = NULL,
-              
+
               sliderTextInput(
                 inputId = "age",
                 label = "Age",
@@ -243,18 +243,18 @@ ui <- dashboardPage(
                 selected = c("15", "45"),
                 grid = TRUE
               ),
-              
+
               actionButton(
                 inputId = "all_age",
                 label = "Select All"
               )
             ),
-            
-            
+
+
             box(
               width = NULL,
               height = 120,
-              
+
               radioButtons(
                 inputId = "sex",
                 label = "Sex",
@@ -262,10 +262,10 @@ ui <- dashboardPage(
                 selected = "Both"
               )
             ),
-            
+
             box(
               width = NULL,
-              
+
               sliderInput(
                 inputId = "year",
                 label = "Year",
@@ -275,7 +275,7 @@ ui <- dashboardPage(
                 step = 5,
                 sep = ""
               ),
-              
+
               bsTooltip(
                 id = "year",
                 title = "<strong>Our population forecasts start from 2020</strong>; population data before 2020 are OFM estimates.",
@@ -284,33 +284,33 @@ ui <- dashboardPage(
                 )
               )
             ),
-            
+
             box(
               width = NULL,
               height = 90,
-              
+
               radioButtons(
                 inputId = "measure_type",
                 label = "Measure",
                 choices = c("Count", "Percentage"),
                 selected = "Count"
               ),
-              
+
               radioTooltip(
                 id = "measure_type",
                 choice = "Percentage",
                 title = "<img src=\"percentage_explanation.png\"/>",
-                placement = "bottom",
+                placement = "top",
                 options = list(
                   html = TRUE
                 )
               )
             )
-            
+
           )
         )
       ),
-      
+
       tabItem(
         tabName = "ack"
       )
@@ -324,7 +324,7 @@ server <- function(input, output, session) {
   year_reactive <- reactive({
     input$year
   })
-  
+
   race_reactive <- reactive({
     if (input$race == "All") {
       c("AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White")
@@ -332,7 +332,7 @@ server <- function(input, output, session) {
       input$race
     }
   })
-  
+
   sex_reactive <- reactive({
     if (input$sex == "Both") {
       c("Female", "Male")
@@ -340,14 +340,14 @@ server <- function(input, output, session) {
       input$sex
     }
   })
-  
+
   age_reactive <- reactive({
     upper <- 90
-    
+
     if (input$age[2] != "85+") {
       upper <- as.integer(input$age[2])
     }
-    
+
     if (input$age[1] == "85+") {
       c()
     } else {
@@ -357,7 +357,7 @@ server <- function(input, output, session) {
         "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69",
         "70-74", "75-79", "80-84", "85+"
       )
-      
+
       if (upper != lower) {
         age_list[(lower / 5 + 1):(upper / 5)]
       } else {
@@ -365,18 +365,18 @@ server <- function(input, output, session) {
       }
     }
   })
-  
+
   measure_reactive <- reactive({
     input$measure_type
   })
-  
+
   all_selected <- reactive({
     measure_reactive() == "Percentage" &&
       length(sex_reactive()) == 2 &&
       length(age_reactive()) == 18 &&
       length(race_reactive()) == 7
   })
-  
+
   warning_text_reactive <- reactive({
     if (all_selected()) {
       "Please change the \"Measure\" option to \"Count\" when the whole population is selected!"
@@ -384,7 +384,7 @@ server <- function(input, output, session) {
       ""
     }
   })
-  
+
   observeEvent(input$all_age, {
     updateSliderTextInput(
       session,
@@ -394,11 +394,11 @@ server <- function(input, output, session) {
       selected = c("0", "85+")
     )
   })
-  
+
   sp_reactive <- reactive({
     selected_df <- hp_proj %>%
       filter(Year %in% year_reactive())
-    
+
     if (measure_reactive() == "Percentage") {
       selected_df <- selected_df %>%
         group_by(GEOID) %>%
@@ -407,10 +407,10 @@ server <- function(input, output, session) {
         ) %>%
         ungroup() %>%
         select(-value)
-      
+
       colnames(selected_df)[6] <- "value"
     }
-    
+
     selected_df <- selected_df %>%
       filter(
         Sex %in% sex_reactive(),
@@ -419,17 +419,17 @@ server <- function(input, output, session) {
       ) %>%
       group_by(GEOID) %>%
       summarize(value = sum(value))
-    
+
     if (measure_reactive() == "Percentage") {
       if (all_selected()) {
         selected_df <- selected_df %>%
           mutate(value = 100)
       }
     }
-    
+
     merge_df_spdf(selected_df, kc_geo_spdf)
   })
-  
+
   legend_title_reactive <- reactive({
     if (input$measure_type == "Count") {
       "Population Count"
@@ -437,7 +437,7 @@ server <- function(input, output, session) {
       "Population Percentage (%)"
     }
   })
-  
+
   popup_text_reactive <- reactive({
     paste(
       "GEOID: <strong>%s</strong><br/>",
@@ -451,15 +451,15 @@ server <- function(input, output, session) {
       sep = ""
     )
   })
-  
+
   output$warning <- renderText({
     warning_text_reactive()
   })
-  
+
   output$map <- renderLeaflet({
     selected_df <- hp_proj %>%
       filter(Year %in% 2020)
-    
+
     selected_df <- selected_df %>%
       filter(
         Sex %in% c("Female", "Male"),
@@ -471,18 +471,18 @@ server <- function(input, output, session) {
       ) %>%
       group_by(GEOID) %>%
       summarize(value = sum(value))
-    
+
     sp <- merge_df_spdf(selected_df, kc_geo_spdf)
-    
+
     col_pal <- colorQuantile(
       palette = "Blues",
       domain = sp@data$value,
       n = 5,
       na.color = NA
     )
-    
+
     legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
-    
+
     leaflet(sp) %>%
       addProviderTiles(
         providers$CartoDB.Positron,
@@ -703,19 +703,19 @@ server <- function(input, output, session) {
         )
       )
   })
-  
+
   observe({
     shinyjs::showElement(id = 'loading')
-    
+
     sp <- sp_reactive()
-    
+
     proxy_map <- leafletProxy(
       "map",
       data = sp
     ) %>%
       clearShapes() %>%
       clearControls()
-    
+
     if (all_selected()) {
       proxy_map <- proxy_map %>%
         addPolygons(
@@ -762,9 +762,9 @@ server <- function(input, output, session) {
         n = 5,
         na.color = NA
       )
-      
+
       legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
-      
+
       proxy_map <- proxy_map %>%
         addPolygons(
           layerId = ~GEOID,
@@ -809,24 +809,24 @@ server <- function(input, output, session) {
           position = "bottomright"
         )
     }
-    
+
     Sys.sleep(1)
-    
+
     shinyjs::hideElement(id = 'loading')
   })
-  
-  
+
+
   #-----------------plot----------
   clicked_tract <- reactiveValues(df = NULL)
-  
+
   observeEvent(input$map_click,
                {
                  clicked_tract$df <- NULL
                },
                priority = 100
   )
-  
-  
+
+
   observeEvent(input$map_shape_click,
                {
                  clicked_tract$df <- hp_proj %>%
@@ -834,17 +834,17 @@ server <- function(input, output, session) {
                },
                priority = 99
   )
-  
+
   df_reactive <- reactive({
     df <- clicked_tract$df
-    
+
     if (is.null(df)) {
       df <- hp_proj
     }
-    
+
     df <- df %>%
       select(-GEOID)
-    
+
     if (measure_reactive() == "Count") {
       df <- df %>%
         group_by(Year, Age5, Sex, Race) %>%
@@ -860,7 +860,7 @@ server <- function(input, output, session) {
         select(-value)
       colnames(df)[5] <- "value"
     }
-    
+
     df <- df %>%
       filter(
         Age5 %in% age_reactive(),
@@ -868,7 +868,7 @@ server <- function(input, output, session) {
       ) %>%
       group_by(Year, Race) %>%
       summarize(value = sum(value))
-    
+
     df <- rbind(
       df %>%
         mutate(Race = "Total") %>%
@@ -878,14 +878,14 @@ server <- function(input, output, session) {
       df %>%
         arrange(Race, Year)
     )
-    
+
     df
   })
-  
-  
+
+
   output$plot <- renderPlotly({
     df <- df_reactive()
-    
+
     P <- plot_ly(
       type = "scatter",
       mode = "lines"
@@ -895,11 +895,11 @@ server <- function(input, output, session) {
         shapes = list(
           list(
             type = "line",
-            y0 = 0, 
-            y1 = 1, 
+            y0 = 0,
+            y1 = 1,
             yref = "paper",
-            x0 = 2020, 
-            x1 = 2020, 
+            x0 = 2020,
+            x1 = 2020,
             line = list(
               dash = "dash",
               width = 2,
@@ -908,7 +908,7 @@ server <- function(input, output, session) {
           )
         )
       )
-    
+
     col_pal <- c(
       c(
         "rgba(1,1,1,1)",
@@ -921,21 +921,21 @@ server <- function(input, output, session) {
         "rgba(191,91,23,1)"
       )
     )
-    
+
     index <- NULL
     races <- unique(df$Race)
     selected_race <- "Total"
-    
+
     if (length(race_reactive()) != 7) {
       selected_race <- race_reactive()
     }
-    
+
     for (i in 1:length(races)) {
       curr_race <- races[i]
-      
+
       if (curr_race != selected_race) {
         pop <- filter(df, Race == curr_race)$value
-        
+
         P <- add_trace(
           P,
           x = ~ unique(df$Year),
@@ -951,7 +951,7 @@ server <- function(input, output, session) {
         index <- i
       }
     }
-    
+
     P <- add_trace(
       P,
       x = ~ unique(df$Year),
@@ -962,7 +962,7 @@ server <- function(input, output, session) {
         width = 4
       )
     )
-    
+
     P <- layout(
       P,
       title = ifelse(
@@ -981,10 +981,10 @@ server <- function(input, output, session) {
         )
       )
     )
-    
+
     P
   })
-  
+
   output$reset_chart_button <- renderUI(
     if (!is.null(clicked_tract$df)) {
       actionButton(
@@ -993,11 +993,11 @@ server <- function(input, output, session) {
       )
     }
   )
-  
+
   observeEvent(input$reset_line_chart, {
     clicked_tract$df <- NULL
   })
-  
+
   outputOptions(output, "map", suspendWhenHidden = FALSE)
   outputOptions(output, "plot", suspendWhenHidden = FALSE)
 
