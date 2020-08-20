@@ -790,7 +790,12 @@ server <- function(input, output, session) {
           labFormat = {
             function(type, cuts, p) {
               n <- length(cuts)
-              paste0(seq(20, 100, 20)[-n], "th PCTL (", as.integer(cuts)[-n], " - ", as.integer(cuts)[-1], ")")
+              lower <- as.integer(cuts)[-n]
+              if (-n != 1) {
+                lower <- as.integer(cuts)[-n] + 1
+              }
+              upper <- as.integer(cuts)[-1]
+              paste0(seq(20, 100, 20)[-n], "th PCTL (", lower, " - ", upper, ")")
             }
           },
           title = legend_title_reactive(),
