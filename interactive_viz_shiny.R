@@ -300,7 +300,7 @@ ui <- dashboardPage(
                 id = "measure_type",
                 choice = "Percentage",
                 title = "<img src=\"percentage_explanation.png\"/>",
-                placement = "bottom",
+                placement = "top",
                 options = list(
                   html = TRUE
                 )
