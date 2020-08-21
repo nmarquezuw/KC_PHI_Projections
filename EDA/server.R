@@ -90,11 +90,17 @@ server <- function(input, output, session) {
         }
     })
     
+    age_warning_reactive <- reactive({
+        if (length(age_reactive()) == 0) {
+            "Please select a VALID age range!"
+        }
+    })
+    
     observeEvent(input$all_age, {
         updateSliderTextInput(
             session,
             inputId = "age",
-            label = "Age",
+            label = "Age Range",
             choices = c(seq(0, 85, 5), "85+"),
             selected = c("0", "85+")
         )
@@ -161,6 +167,10 @@ server <- function(input, output, session) {
         warning_text_reactive()
     })
     
+    output$age_warning <- renderText({
+        age_warning_reactive()
+    })
+    
     output$map <- renderLeaflet({
         selected_df <- hp_proj %>%
             filter(Year %in% 2020)
@@ -189,6 +199,7 @@ server <- function(input, output, session) {
         legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
         
         leaflet(sp) %>%
+            addTiles(attribution = HTML("<a href='https://icons8.com/icon/633/hospital'>Hospital icon</a> and <a href='https://icons8.com/icon/1953/school'>School icon</a> by Icons8")) %>%
             addProviderTiles(
                 providers$CartoDB.Positron,
                 options = providerTileOptions(
@@ -703,6 +714,15 @@ server <- function(input, output, session) {
             actionButton(
                 inputId = "reset_line_chart",
                 label = "Go Back to County-Level Data"
+            )
+        }
+    )
+    
+    output$all_age_button <- renderUI(
+        if (length(age_reactive()) != 18) {
+            actionButton(
+                inputId = "all_age",
+                label = "Select All Age Groups"
             )
         }
     )
