@@ -199,7 +199,14 @@ server <- function(input, output, session) {
         legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
         
         leaflet(sp) %>%
-            addTiles(attribution = HTML("<a href='https://icons8.com/icon/633/hospital'>Hospital icon</a> and <a href='https://icons8.com/icon/1953/school'>School icon</a> by Icons8")) %>%
+            addTiles(
+                urlTemplate = "",
+                attribution = HTML("<a href='https://icons8.com/icon/633/hospital'>Hospital icon</a> and <a href='https://icons8.com/icon/1953/school'>School icon</a> by Icons8"),
+                options = tileOptions(
+                    minZoom = 9,
+                    maxZoom = 15
+                )
+            ) %>%
             addProviderTiles(
                 providers$CartoDB.Positron,
                 options = providerTileOptions(
