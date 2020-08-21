@@ -1,0 +1,31 @@
+{
+"type": "FeatureCollection",
+"name": "wic_spdf",
+"features": [
+{ "type": "Feature", "id": 1, "properties": { "Name": "Auburn - WIC at Greenpoint", "Address": "126 Auburn Ave, WA 98002" }, "geometry": { "type": "Point", "coordinates": [ -122.2274771, 47.3089196 ] } },
+{ "type": "Feature", "id": 2, "properties": { "Name": "Auburn - WIC at Muckleshoot ", "Address": "17500 SE 392nd St, WA 98092" }, "geometry": { "type": "Point", "coordinates": [ -122.108078700538286, 47.25100225 ] } },
+{ "type": "Feature", "id": 3, "properties": { "Name": "Auburn Public Health Center ", "Address": "901 Auburn Way N, WA 98002" }, "geometry": { "type": "Point", "coordinates": [ -122.223413476747723, 47.31624235 ] } },
+{ "type": "Feature", "id": 4, "properties": { "Name": "Des Moines - WIC at HealthPoint", "Address": "26401 Pacific Hwy S, Des Moines, WA 98198" }, "geometry": { "type": "Point", "coordinates": [ -122.306202735327858, 47.3652104 ] } },
+{ "type": "Feature", "id": 5, "properties": { "Name": "Enumclaw - WIC at Valley Cities", "Address": "1335 Cole St, Enumclaw, WA 98022" }, "geometry": { "type": "Point", "coordinates": [ -121.991439857577959, 47.2016006 ] } },
+{ "type": "Feature", "id": 6, "properties": { "Name": "Federal Way Public Health Center", "Address": "33431 13th Place S, Federal Way, WA 98003" }, "geometry": { "type": "Point", "coordinates": [ -122.317909545136743, 47.3019348 ] } },
+{ "type": "Feature", "id": 7, "properties": { "Name": "Kent Public Health Center at Birch Creek ", "Address": "13111 SE 274th St, Kent, WA 98030" }, "geometry": { "type": "Point", "coordinates": [ -122.166406580341999, 47.35564615 ] } },
+{ "type": "Feature", "id": 8, "properties": { "Name": "Kent - WIC at HealthPoint", "Address": "403 E. Meeker St, WA 98030" }, "geometry": { "type": "Point", "coordinates": [ -122.229319703929946, 47.38193815 ] } },
+{ "type": "Feature", "id": 9, "properties": { "Name": "Kent Public Health Center (East Hill) ", "Address": "25742 104th Ave SE, Kent, WA 98030" }, "geometry": { "type": "Point", "coordinates": [ -122.2007357, 47.3708771 ] } },
+{ "type": "Feature", "id": 10, "properties": { "Name": "Renton - WIC at Valley Midwives", "Address": "4033 Talbot Rd. S, Renton, WA 98070" }, "geometry": { "type": "Point", "coordinates": [ -122.214521857146096, 47.44422405 ] } },
+{ "type": "Feature", "id": 11, "properties": { "Name": "Renton Public Health Center", "Address": "3201 NE 7th St, Renton, WA 98056" }, "geometry": { "type": "Point", "coordinates": [ -122.176187442823505, 47.49505164103671 ] } },
+{ "type": "Feature", "id": 12, "properties": { "Name": "SeaTac - WIC at HealthPoint ", "Address": "4040 South 188th St, SeaTac, WA 98188" }, "geometry": { "type": "Point", "coordinates": [ -122.282486303331041, 47.434666 ] } },
+{ "type": "Feature", "id": 13, "properties": { "Name": "Vashon Island - WIC at Vashon United Methodist ", "Address": "17928 Vashon Hwy SW, Vashon, WA 98070" }, "geometry": { "type": "Point", "coordinates": [ -122.460366323784839, 47.44480046664944 ] } },
+{ "type": "Feature", "id": 14, "properties": { "Name": "Bellevue - WIC at Eastgate Public Health Center", "Address": "14350 SE Eastgate Way, Bellevue, WA 98007" }, "geometry": { "type": "Point", "coordinates": [ -122.149637788970963, 47.579961731288712 ] } },
+{ "type": "Feature", "id": 15, "properties": { "Name": "Bothell - WIC at HealthPoint", "Address": "10414 Beardslee Blvd, Bothell, WA 98011" }, "geometry": { "type": "Point", "coordinates": [ -122.2006011, 47.7609569 ] } },
+{ "type": "Feature", "id": 16, "properties": { "Name": "Carnation - WIC at Hopelink ", "Address": "39157 E. Commercial St., Carnation, WA 98014" }, "geometry": { "type": "Point", "coordinates": [ -121.9114198, 47.6486311 ] } },
+{ "type": "Feature", "id": 17, "properties": { "Name": "Kirkland - Totem Lake ", "Address": "13030 121st Way NE, Kirkland, WA 98034" }, "geometry": { "type": "Point", "coordinates": [ -122.1784328, 47.7176687 ] } },
+{ "type": "Feature", "id": 18, "properties": { "Name": "North Bend - WIC at Snoqualmie Valley Food Bank ", "Address": "122 East 3rd St, North Bend, WA 98045" }, "geometry": { "type": "Point", "coordinates": [ -121.783100571428577, 47.496040551020414 ] } },
+{ "type": "Feature", "id": 19, "properties": { "Name": "Columbia Public Health Center", "Address": "4400 37th Ave S, Seattle, WA 98118" }, "geometry": { "type": "Point", "coordinates": [ -122.2859865, 47.5635772 ] } },
+{ "type": "Feature", "id": 20, "properties": { "Name": "Downtown Public Health Center - WIC ", "Address": "2124 4th Ave, Seattle, WA 98121" }, "geometry": { "type": "Point", "coordinates": [ -122.342178861143125, 47.6145826 ] } },
+{ "type": "Feature", "id": 21, "properties": { "Name": "Lake City - WIC at North Seattle Family Center", "Address": "2611 NE 125th St., Seattle, WA 98125" }, "geometry": { "type": "Point", "coordinates": [ -122.299646758517198, 47.7187823 ] } },
+{ "type": "Feature", "id": 22, "properties": { "Name": "North Seattle at Meridian Center for Health ", "Address": "10521 Meridian Ave N, Seattle, WA 98133" }, "geometry": { "type": "Point", "coordinates": [ -122.334060714285727, 47.705485571428568 ] } },
+{ "type": "Feature", "id": 23, "properties": { "Name": "Shoreline - WIC at Center for Human Services ", "Address": "17018 - 15th Ave. NE, Shoreline, WA 98155" }, "geometry": { "type": "Point", "coordinates": [ -122.313202693877557, 47.752352612244898 ] } },
+{ "type": "Feature", "id": 24, "properties": { "Name": "Wallingford - WIC at FamilyWorks", "Address": "1501 N. 45th St, Seattle, WA 98103" }, "geometry": { "type": "Point", "coordinates": [ -122.3387805, 47.66122965 ] } },
+{ "type": "Feature", "id": 25, "properties": { "Name": "White Center at Greenbridge ", "Address": "9934 8th Ave. SW, Seattle, WA 98106" }, "geometry": { "type": "Point", "coordinates": [ -122.3460997, 47.5324983 ] } }
+]
+}

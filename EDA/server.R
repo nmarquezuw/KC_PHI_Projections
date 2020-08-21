@@ -9,6 +9,10 @@ kc_geo_spdf <- readOGR("./data/kc_tract.json")
 
 kc_public_clinics <- readOGR("./data/kc_public_clinics.json")
 
+kc_wic <- readOGR("./data/kc_wic.json")
+
+kc_chc <- readOGR("./data/kc_chc.json")
+
 kc_schools <- readOGR("./data/kc_schools.json")
 
 kc_schools <- list(
@@ -280,6 +284,37 @@ server <- function(input, output, session) {
                     lapply(htmltools::HTML)
             ) %>%
             addMarkers(
+                data = kc_wic,
+                icon = makeIcon(
+                    iconUrl = "https://img.icons8.com/metro/26/000000/hospital.png",
+                    iconWidth = 15,
+                    iconHeight = 15
+                ),
+                group = "Women, Infant and Children Services (2020)",
+                popup = sprintf(
+                    "Name: <strong>%s</strong></br>Address: %s</br>",
+                    kc_wic$Name,
+                    kc_wic$Address
+                ) %>%
+                    lapply(htmltools::HTML)
+            ) %>%
+            addMarkers(
+                data = kc_chc,
+                icon = makeIcon(
+                    iconUrl = "https://img.icons8.com/metro/26/000000/hospital.png",
+                    iconWidth = 15,
+                    iconHeight = 15
+                ),
+                group = "Community Health Centers (2020)",
+                popup = sprintf(
+                    "Name: <strong>%s</strong></br>Address: %s</br>",
+                    kc_chc$Name,
+                    kc_chc$Address
+                ) %>%
+                    lapply(htmltools::HTML),
+                clusterOptions = TRUE
+            ) %>%
+            addMarkers(
                 data = kc_schools[[1]],
                 icon = makeIcon(
                     iconUrl = "https://img.icons8.com/metro/26/000000/school.png",
@@ -415,6 +450,8 @@ server <- function(input, output, session) {
             addLayersControl(
                 overlayGroups = c(
                     "Public Health Clinics (2018)",
+                    "Community Health Centers (2020)",
+                    "Women, Infant and Children Services (2020)",
                     paste(names(kc_schools), "(2018)")
                 ),
                 options = layersControlOptions(collapsed = TRUE)
@@ -422,6 +459,8 @@ server <- function(input, output, session) {
             hideGroup(
                 c(
                     "Public Health Clinics (2018)",
+                    "Community Health Centers (2020)",
+                    "Women, Infant and Children Services (2020)",
                     paste(names(kc_schools), "(2018)")
                 )
             )
