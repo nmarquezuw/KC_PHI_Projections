@@ -114,7 +114,7 @@ ui <- dashboardPage(
         p("To display projections by year, use the drop down menu to select the year of interest. To explore projections by sex choose the female, male or both option."),
         br(),
         
-        h4(tags$i("Age")),
+        h4(tags$i("Age Range")),
         p("The age feature allows users to display projections by specific age ranges in 5 year increments. Use the toggle feature to set a minimum and maximum age range (0 to 85+), or click the select all option to display projections across all ages. "),
         br(),
         
@@ -146,10 +146,15 @@ ui <- dashboardPage(
         
         textOutput("warning"),
         
+        singleton(tags$head(tags$script(src = "pop_patch.js"))),
+        tags$style(".tooltip{width: 200px; font-size: 14px; }"),
+        
         fluidRow(
           #----------viz------
           column(
             width = 9,
+            
+            id = "viz_col",
             
             box(
               width = NULL,
@@ -170,8 +175,13 @@ ui <- dashboardPage(
                 "plot",
                 height = 230
               ),
-              helpText("*Click on a tract on the map above to see tract-level population."),
-              helpText("**Click on a name in the legend on the right to show the line for the corresponding race/ethnicity."),
+              helpText(
+                "* Click on a tract on the map above to see tract-level population.",
+                br(),
+                "** Click on a name in the legend on the right to show the line for the corresponding race/ethnicity.",
+                br(),
+                "*** \"M\" indicates millions (‘000,000s); \"k\" indicates thousands (‘000s)."
+              ),
               
               uiOutput("reset_chart_button")
               
@@ -187,22 +197,8 @@ ui <- dashboardPage(
               radioButtons(
                 inputId = "race",
                 label = "Race and Ethnicity",
-                choices = c("All", "AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White"),
+                choices = c("All", "American Indian and Alaska Native (AIAN)", "Asian", "Black", "Hispanic", "Native Hawaiian or Other Pacific Islander (NHOPI)", "Two or More Races", "White"),
                 selected = "All"
-              ),
-              
-              radioTooltip(
-                id = "race",
-                choice = "AIAN",
-                title = "American Indian and Alaska Native",
-                placement = "bottom"
-              ),
-              
-              radioTooltip(
-                id = "race",
-                choice = "NHOPI",
-                title = "Native Hawaiian or Other Pacific Islander",
-                placement = "bottom"
               )
             ),
             
@@ -212,7 +208,7 @@ ui <- dashboardPage(
               
               sliderTextInput(
                 inputId = "age",
-                label = "Age",
+                label = "Age Range",
                 choices = c(seq(0, 85, 5), "85+"),
                 selected = c("15", "45"),
                 grid = TRUE
@@ -240,19 +236,17 @@ ui <- dashboardPage(
             box(
               width = NULL,
               
-              sliderInput(
+              selectInput(
                 inputId = "year",
                 label = "Year",
-                min = 2000,
-                max = 2045,
-                value = 2020,
-                step = 5,
-                sep = ""
+                choices = seq(2000,2045,5),
+                selected = 2020
               ),
               
               bsTooltip(
                 id = "year",
                 title = "<strong>Our population forecasts start from 2020</strong>; population data before 2020 are OFM estimates.",
+                placement = "top",
                 options = list(
                   html = TRUE
                 )
@@ -282,7 +276,7 @@ ui <- dashboardPage(
             )
             
           )
-        )
+         )
       ),
       
       tabItem(

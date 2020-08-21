@@ -1,3 +1,5 @@
+library(shiny)
+
 hp_proj <- read.csv(
     file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
     colClasses = c("GEOID" = "character")
@@ -25,7 +27,11 @@ server <- function(input, output, session) {
     })
     
     race_reactive <- reactive({
-        if (input$race == "All") {
+        if (input$race == "American Indian and Alaska Native (AIAN)") {
+            "AIAN"
+        } else if (input$race == "Native Hawaiian or Other Pacific Islander (NHOPI)") {
+            "NHOPI"
+        } else if (input$race == "All") {
             c("AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White")
         } else {
             input$race
@@ -233,7 +239,7 @@ server <- function(input, output, session) {
                             lower <- as.integer(cuts)[-n] + 1
                         }
                         upper <- as.integer(cuts)[-1]
-                        paste0(seq(20, 100, 20)[-n], "th PCTL (", lower, " - ", upper, ")")
+                        paste0(lower, " - ", upper, "(", seq(20, 100, 20)[-n], "th PCTL)")
                     }
                 },
                 title = "Population Count",
@@ -403,6 +409,8 @@ server <- function(input, output, session) {
             )
     })
     
+    outputOptions(output, "map", suspendWhenHidden = FALSE)
+    
     observe({
         shinyjs::showElement(id = 'loading')
         
@@ -501,7 +509,7 @@ server <- function(input, output, session) {
                                 lower <- as.integer(cuts)[-n] + 1
                             }
                             upper <- as.integer(cuts)[-1]
-                            paste0(seq(20, 100, 20)[-n], "th PCTL (", lower, " - ", upper, ")")
+                            paste0(lower, " - ", upper, " (", seq(20, 100, 20)[-n], "th PCTL)")
                         }
                     },
                     title = legend_title_reactive(),
@@ -585,6 +593,9 @@ server <- function(input, output, session) {
     output$plot <- renderPlotly({
         df <- df_reactive()
         
+        yr = as.integer(year_reactive())
+        
+        
         P <- plot_ly(
             type = "scatter",
             mode = "lines"
@@ -651,6 +662,8 @@ server <- function(input, output, session) {
             }
         }
         
+        temp_yval <- filter(filter(df, Race == selected_race), Year == yr)[["value"]]
+        
         P <- add_trace(
             P,
             x = ~ unique(df$Year),
@@ -670,7 +683,8 @@ server <- function(input, output, session) {
                 paste0("Population of the Selected Groups, Selected Tract (GEOID: ", clicked_tract$df$GEOID[1], ")")
             ),
             xaxis = list(
-                title = "Year"
+                title = "Year",
+                tickformat = "K"
             ),
             yaxis = list(
                 title = ifelse(
@@ -697,7 +711,83 @@ server <- function(input, output, session) {
         clicked_tract$df <- NULL
     })
     
-    outputOptions(output, "map", suspendWhenHidden = FALSE)
     outputOptions(output, "plot", suspendWhenHidden = FALSE)
+    
+    selected_charac_html_text <- reactiveValues()
+        
+    observe({
+        sex <- "female and male"
+        if (length(sex_reactive()) == 1) {
+            sex <- tolower(sex_reactive())
+        }
+        
+        race <- "population of all racial and ethnic groups"
+        
+        if (length(race_reactive()) == 1 ) {
+            race <- paste0(race_reactive(), " population")
+        }
+        
+        age <- "NA"
+        
+        l = length(age_reactive())
+        if (l != 0) {
+            if (age_reactive()[l] == "85+") {
+                age <- paste0(
+                    str_split(age_reactive()[1], "-")[[1]][1],
+                    "-85+"
+                )
+            } else {
+                age <- paste0(
+                    str_split(age_reactive()[1], "-")[[1]][1],
+                    "-",
+                    str_split(age_reactive()[l], "-")[[1]][2]
+                )
+            }
+        }
+        
+        
+        selected_charac_html_text$map <- paste0(
+            "Currently displaying <strong>population ",
+            tolower(measure_reactive()), "s",
+            "</strong> for the <strong>",
+            sex, " ", race,
+            "</strong> aged <strong>",
+            age,
+            "</strong> for the year <strong>",
+            year_reactive(),
+            "</strong>."
+        )
+        
+        selected_charac_html_text$plot <- paste0(
+            "Currently displaying <strong>population ",
+            tolower(measure_reactive()), "s",
+            "</strong> for the <strong>",
+            sex, " ", race,
+            "</strong> aged <strong>",
+            age,
+            "</strong>."
+        )
+        
+    })
+    
+    observe({
+        addTooltip(
+            session,
+            id = "map",
+            title = selected_charac_html_text$map,
+            placement = "right",
+            options = list(html = TRUE)
+        )
+    })
+    
+    observe({
+        addTooltip(
+            session,
+            id = "plot",
+            title = selected_charac_html_text$plot,
+            placement = "right",
+            options = list(html = TRUE)
+        )
+    })
     
 }
