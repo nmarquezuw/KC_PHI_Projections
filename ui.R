@@ -49,7 +49,7 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem(
-        "User Guide / Intro Page",
+        "Introduction",
         tabName = "intro"
         # icon = icon("dashboard")
       ),
@@ -144,6 +144,13 @@ ui <- dashboardPage(
       tabItem(
         tabName = "viz_tab",
         
+        tags$head(tags$style("#warning{color: red;
+                                 font-size: 20px;
+                                 font-style: bold;
+                                 }"
+        )
+        ),
+        
         textOutput("warning"),
         
         singleton(tags$head(tags$script(src = "pop_patch.js"))),
@@ -210,14 +217,20 @@ ui <- dashboardPage(
                 inputId = "age",
                 label = "Age Range",
                 choices = c(seq(0, 85, 5), "85+"),
-                selected = c("15", "45"),
+                selected = c("0", "85+"),
                 grid = TRUE
               ),
               
-              actionButton(
-                inputId = "all_age",
-                label = "Select All"
+              tags$head(tags$style("#age_warning{color: red;
+                                 font-size: 18px;
+                                 font-style: bold;
+                                 }"
               )
+              ),
+              
+              textOutput("age_warning"),
+              
+              uiOutput("all_age_button")
             ),
             
             
