@@ -203,14 +203,6 @@ server <- function(input, output, session) {
         legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
         
         leaflet(sp) %>%
-            addTiles(
-                urlTemplate = "",
-                attribution = HTML("<a href='https://icons8.com/icon/633/hospital'>Hospital icon</a> and <a href='https://icons8.com/icon/1953/school'>School icon</a> by Icons8"),
-                options = tileOptions(
-                    minZoom = 9,
-                    maxZoom = 15
-                )
-            ) %>%
             addProviderTiles(
                 providers$CartoDB.Positron,
                 options = providerTileOptions(
@@ -794,19 +786,27 @@ server <- function(input, output, session) {
         }
         
         age <- "NA"
+        lower <- "NA"
+        upper <- "NA"
         
         l = length(age_reactive())
         if (l != 0) {
-            if (age_reactive()[l] == "85+") {
+            lower <- str_split(age_reactive()[1], "-")[[1]][1]
+            upper <- age_reactive()[l]
+            if (upper == "85+") {
                 age <- paste0(
-                    str_split(age_reactive()[1], "-")[[1]][1],
-                    "-85+"
+                    "[",
+                    lower,
+                    "-85+)"
                 )
             } else {
+                upper <- as.integer(str_split(age_reactive()[l], "-")[[1]][2]) + 1
                 age <- paste0(
-                    str_split(age_reactive()[1], "-")[[1]][1],
+                    "[",
+                    lower,
                     "-",
-                    str_split(age_reactive()[l], "-")[[1]][2]
+                    upper,
+                    ")"
                 )
             }
         }
@@ -834,6 +834,38 @@ server <- function(input, output, session) {
             "</strong>."
         )
         
+        if (upper == "85+") {
+            selected_charac_html_text$age <- paste0(
+                "Selected Age Range: ",
+                age,
+                "</br>(i.e. ",
+                lower,
+                " ≤ Selected Ages)"
+            )
+        } else {
+            selected_charac_html_text$age <- paste0(
+                "Selected Age Range: ",
+                age,
+                "</br>(i.e. ",
+                lower,
+                " ≤ Selected Ages < ",
+                upper,
+                ")"
+            )
+            
+        }
+    })
+    
+    observe({
+        if (length(age_reactive()) != 18) {
+            addTooltip(
+                session,
+                id = "age",
+                title = selected_charac_html_text$age,
+                placement = "top",
+                options = list(html = TRUE)
+            )
+        }
     })
     
     observe({
