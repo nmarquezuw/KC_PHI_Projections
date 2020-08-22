@@ -160,20 +160,41 @@ ui <- dashboardPage(
           #----------viz------
           column(
             width = 9,
-            
-            id = "viz_col",
-            
-            box(
+
+            tabBox(
               width = NULL,
+              height = 560,
               
-              leafletOutput(
-                "map",
-                height = 500
+              tabPanel(
+                title = "Map",
+                id = "map_tab",
+                
+                leafletOutput(
+                  "map",
+                  height = 500
+                ),
+                
+                shinyjs::useShinyjs(),
+                shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px;", addSpinner(div(), spin = "circle", color = "black")))
+                
               ),
               
-              shinyjs::useShinyjs(),
-              shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px;", addSpinner(div(), spin = "circle", color = "black")))
-              
+              tabPanel(
+                title = "Data Attribution",
+                id = "data_attribution_tab",
+                
+                tags$style(type='text/css', "li {font-size: 15px !important}"),
+                
+                tags$h3("Data and Resources Used for Creating the Map:"),
+                tags$ul(
+                  tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/public-health-clinics-ph-clinics-point'>King County Public Health Clinics Data by King County GIS Open Data</a>")),
+                  tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/school-sites-in-king-county-schsite-point'>King County School Sites Data by King County GIS Open Data</a>")),
+                  tags$li(HTML("The list of Community Health Centers is retrieved from <a href='https://www.kingcounty.gov/depts/health/locations/community-health-centers.aspx'>the King County Public Health website</a>")),
+                  tags$li(HTML("The list of Women, Infant and Children Services is retrieved from <a href='https://www.kingcounty.gov/depts/health/locations/wic-first-steps.aspx'>the King County Public Health website</a>")),
+                  tags$li(HTML("<a href='https://icons8.com/icon/18112/hospital'>Hospital icon by Icons8</a>")),
+                  tags$li(HTML("<a href='https://icons8.com/icon/18744/school'>School icon by Icons8</a>"))
+                )
+              )
             ),
             
             box(
@@ -293,8 +314,56 @@ ui <- dashboardPage(
       ),
       
       tabItem(
-        tabName = "ack"
+        tabName = "ack",
+        
+        tags$style(type='text/css', "p {font-size: 15px !important} li {font-size: 15px !important}"),
+        
+        h1(
+          "Acknowledgements",
+          align = "center"
+        ),
+        br(),
+        
+        
+        p(HTML("This research was funded by the Population Health Initiative at the University of Washington. Partial support for this research also came from Shanahan Endowment Fellowship and a Eunice Kennedy Shriver National Institute of Child Health and Human Development research infrastructure grant, P2C HD042828, to the Center for Studies in Demography & Ecology at the University of Washington."),
+        br(),
+        br(),
+        
+        p(
+          "This research was supported by the following individuals:",
+          # tags$ul(
+          #   tags$li("Xiaoqi (Steven) Bao, Undergraduate"),
+          #   tags$li("Eileen Kazura, MPH Student"),
+          #   tags$li("Jessica Lapham, MSW, PhD Student"),
+          #   tags$li("Priya Sarma, Undergraduate"),
+          #   tags$li("Crystal Yu, MA, PhD Student"),
+          #   tags$li("Eva Wong MS, PhD"),
+          #   tags$li("Rebeccah Maskin, PhD"),
+          #   tags$li("Neal Marquez, MA"),
+          #   tags$li("Christine Leibbrand, PhD"),
+          #   tags$li("Sara Curran, PhD"),
+          #   tags$li("Meher Antia, PhD"),
+          #   tags$li("Derek Fulwiler, MA"),
+          #   tags$li("Takashi Inoue, PhD")
+          # )
+          tags$ul(
+            tags$li("Xiaoqi (Steven) Bao"),
+            tags$li("Eileen Kazura"),
+            tags$li("Jessica Lapham"),
+            tags$li("Priya Sarma"),
+            tags$li("Crystal Yu"),
+            tags$li("Eva Wong"),
+            tags$li("Rebeccah Maskin"),
+            tags$li("Neal Marquez"),
+            tags$li("Christine Leibbrand"),
+            tags$li("Sara Curran"),
+            tags$li("Meher Antia"),
+            tags$li("Derek Fulwiler"),
+            tags$li("Takashi Inoue")
+          )
+        )
       )
     )
   )
+)
 )
