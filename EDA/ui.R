@@ -223,6 +223,17 @@ ui <- dashboardPage(
               width = NULL,
               
               radioButtons(
+                inputId = "geo_level",
+                label = "Geographic Level",
+                choices = c("Census Tract", "Health Reporting Area (HRA)"),
+                selected = "Census Tract"
+              )
+            ),
+            
+            box(
+              width = NULL,
+              
+              radioButtons(
                 inputId = "race",
                 label = "Race and Ethnicity",
                 choices = c("All", "American Indian and Alaska Native (AIAN)", "Asian", "Black", "Hispanic", "Native Hawaiian or Other Pacific Islander (NHOPI)", "Two or More Races", "White"),

@@ -1,11 +1,17 @@
 library(shiny)
 
-hp_proj <- read.csv(
+tract_proj <- read.csv(
     file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
     colClasses = c("GEOID" = "character")
 )
 
-kc_geo_spdf <- readOGR("./data/kc_tract.json")
+hra_proj <- read.csv(
+    file = "./data/hra_age5_race_sex_proj_2000_2045.csv"
+)
+
+kc_tract_spdf <- readOGR("./data/kc_tract.json")
+
+kc_hra_spdf <- readOGR("./data/kc_hra.json")
 
 kc_public_clinics <- readOGR("./data/kc_public_clinics.json")
 
@@ -75,6 +81,11 @@ server <- function(input, output, session) {
         }
     })
     
+    # return TRUE when census tract level is selected
+    geo_reactive <- reactive({
+        input$geo_level == "Census Tract"
+    })
+    
     measure_reactive <- reactive({
         input$measure_type
     })
@@ -111,8 +122,13 @@ server <- function(input, output, session) {
     })
     
     sp_reactive <- reactive({
-        selected_df <- hp_proj %>%
-            filter(Year %in% year_reactive())
+        if (geo_reactive()) {
+            selected_df <- tract_proj %>%
+                filter(Year %in% year_reactive())
+        } else {
+            selected_df <- hra_proj %>%
+                filter(Year %in% year_reactive())
+        }
         
         if (measure_reactive() == "Percentage") {
             selected_df <- selected_df %>%
@@ -142,7 +158,11 @@ server <- function(input, output, session) {
             }
         }
         
-        merge_df_spdf(selected_df, kc_geo_spdf)
+        if (geo_reactive()) {
+            merge_df_spdf(selected_df, kc_tract_spdf)
+        } else {
+            merge_df_spdf(selected_df, kc_hra_spdf)
+        }
     })
     
     legend_title_reactive <- reactive({
@@ -154,16 +174,18 @@ server <- function(input, output, session) {
     })
     
     popup_text_reactive <- reactive({
-        paste(
-            "GEOID: <strong>%s</strong><br/>",
-            {
-                if (input$measure_type == "Count") {
-                    "Population: <strong>%g</strong>"
-                } else {
+        paste0(
+            ifelse(
+                geo_reactive(),
+                "Tract GEOID: ",
+                "HRA Name: "
+            ),
+            "<strong>%s</strong><br/>",
+                ifelse (
+                    input$measure_type == "Count",
+                    "Population: <strong>%g</strong>",
                     "Population: <strong>%g %%</strong>"
-                }
-            },
-            sep = ""
+                )
         )
     })
     
@@ -176,7 +198,7 @@ server <- function(input, output, session) {
     })
     
     output$map <- renderLeaflet({
-        selected_df <- hp_proj %>%
+        selected_df <- tract_proj %>%
             filter(Year %in% 2020)
         
         selected_df <- selected_df %>%
@@ -191,7 +213,7 @@ server <- function(input, output, session) {
             group_by(GEOID) %>%
             summarize(value = sum(value))
         
-        sp <- merge_df_spdf(selected_df, kc_geo_spdf)
+        sp <- merge_df_spdf(selected_df, kc_tract_spdf)
         
         col_pal <- colorQuantile(
             palette = "Blues",
@@ -573,11 +595,11 @@ server <- function(input, output, session) {
     
     
     #-----------------plot----------
-    clicked_tract <- reactiveValues(df = NULL)
+    clicked_geo <- reactiveValues(df = NULL)
     
     observeEvent(input$map_click,
                  {
-                     clicked_tract$df <- NULL
+                     clicked_geo$df <- NULL
                  },
                  priority = 100
     )
@@ -585,17 +607,26 @@ server <- function(input, output, session) {
     
     observeEvent(input$map_shape_click,
                  {
-                     clicked_tract$df <- hp_proj %>%
-                         filter(GEOID == input$map_shape_click$id)
+                     if (geo_reactive()) {
+                         clicked_geo$df <- tract_proj %>%
+                             filter(GEOID == input$map_shape_click$id)
+                     } else {
+                         clicked_geo$df <- hra_proj %>%
+                             filter(GEOID == input$map_shape_click$id)
+                     }
                  },
                  priority = 99
     )
     
     df_reactive <- reactive({
-        df <- clicked_tract$df
+        df <- clicked_geo$df
         
         if (is.null(df)) {
-            df <- hp_proj
+            if (geo_reactive()) {
+                df <- tract_proj
+            } else {
+                df <- hra_proj
+            }
         }
         
         df <- df %>%
@@ -727,9 +758,18 @@ server <- function(input, output, session) {
         P <- layout(
             P,
             title = ifelse(
-                is.null(clicked_tract$df),
+                is.null(clicked_geo$df),
                 "County-Level Population of the Selected Groups",
-                paste0("Population of the Selected Groups, Selected Tract (GEOID: ", clicked_tract$df$GEOID[1], ")")
+                paste0(
+                    "Population of the Selected Groups, Selected ",
+                    ifelse(
+                        geo_reactive(),
+                        "Tract (GEOID: ",
+                        "HRA ("
+                    ),
+                    clicked_geo$df$GEOID[1],
+                    ")"
+                )
             ),
             xaxis = list(
                 title = "Year",
@@ -748,7 +788,7 @@ server <- function(input, output, session) {
     })
     
     output$reset_chart_button <- renderUI(
-        if (!is.null(clicked_tract$df)) {
+        if (!is.null(clicked_geo$df)) {
             actionButton(
                 inputId = "reset_line_chart",
                 label = "Go Back to County-Level Data"
@@ -766,7 +806,7 @@ server <- function(input, output, session) {
     )
     
     observeEvent(input$reset_line_chart, {
-        clicked_tract$df <- NULL
+        clicked_geo$df <- NULL
     })
     
     outputOptions(output, "plot", suspendWhenHidden = FALSE)
@@ -821,7 +861,13 @@ server <- function(input, output, session) {
             age,
             "</strong> for the year <strong>",
             year_reactive(),
-            "</strong>."
+            "</strong> at the <strong>",
+            ifelse(
+                geo_reactive(),
+                "Census Tract",
+                "HRA"
+            ),
+            "</strong> level."
         )
         
         selected_charac_html_text$plot <- paste0(
