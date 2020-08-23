@@ -6,7 +6,8 @@ tract_proj <- read.csv(
 )
 
 hra_proj <- read.csv(
-    file = "./data/hra_age5_race_sex_proj_2000_2045.csv"
+    file = "./data/hra_age5_race_sex_proj_2000_2045.csv",
+    encoding = "UTF-8"
 )
 
 kc_tract_spdf <- readOGR("./data/kc_tract.json")
@@ -35,7 +36,7 @@ server <- function(input, output, session) {
     year_reactive <- reactive({
         input$year
     })
-    
+
     race_reactive <- reactive({
         if (input$race == "American Indian and Alaska Native (AIAN)") {
             "AIAN"
@@ -47,7 +48,7 @@ server <- function(input, output, session) {
             input$race
         }
     })
-    
+
     sex_reactive <- reactive({
         if (input$sex == "Both") {
             c("Female", "Male")
@@ -55,14 +56,14 @@ server <- function(input, output, session) {
             input$sex
         }
     })
-    
+
     age_reactive <- reactive({
         upper <- 90
-        
+
         if (input$age[2] != "85+") {
             upper <- as.integer(input$age[2])
         }
-        
+
         if (input$age[1] == "85+") {
             c()
         } else {
@@ -72,7 +73,7 @@ server <- function(input, output, session) {
                 "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69",
                 "70-74", "75-79", "80-84", "85+"
             )
-            
+
             if (upper != lower) {
                 age_list[(lower / 5 + 1):(upper / 5)]
             } else {
@@ -80,23 +81,23 @@ server <- function(input, output, session) {
             }
         }
     })
-    
+
     # return TRUE when census tract level is selected
     geo_reactive <- reactive({
         input$geo_level == "Census Tract"
     })
-    
+
     measure_reactive <- reactive({
         input$measure_type
     })
-    
+
     all_selected <- reactive({
         measure_reactive() == "Percentage" &&
             length(sex_reactive()) == 2 &&
             length(age_reactive()) == 18 &&
             length(race_reactive()) == 7
     })
-    
+
     warning_text_reactive <- reactive({
         if (all_selected()) {
             "Please change the \"Measure\" option to \"Count\" when the whole population is selected!"
@@ -104,13 +105,13 @@ server <- function(input, output, session) {
             ""
         }
     })
-    
+
     age_warning_reactive <- reactive({
         if (length(age_reactive()) == 0) {
             "Please select a VALID age range!"
         }
     })
-    
+
     observeEvent(input$all_age, {
         updateSliderTextInput(
             session,
@@ -120,7 +121,7 @@ server <- function(input, output, session) {
             selected = c("0", "85+")
         )
     })
-    
+
     sp_reactive <- reactive({
         if (geo_reactive()) {
             selected_df <- tract_proj %>%
@@ -129,7 +130,7 @@ server <- function(input, output, session) {
             selected_df <- hra_proj %>%
                 filter(Year %in% year_reactive())
         }
-        
+
         if (measure_reactive() == "Percentage") {
             selected_df <- selected_df %>%
                 group_by(GEOID) %>%
@@ -138,10 +139,10 @@ server <- function(input, output, session) {
                 ) %>%
                 ungroup() %>%
                 select(-value)
-            
+
             colnames(selected_df)[6] <- "value"
         }
-        
+
         selected_df <- selected_df %>%
             filter(
                 Sex %in% sex_reactive(),
@@ -150,21 +151,21 @@ server <- function(input, output, session) {
             ) %>%
             group_by(GEOID) %>%
             summarize(value = sum(value))
-        
+
         if (measure_reactive() == "Percentage") {
             if (all_selected()) {
                 selected_df <- selected_df %>%
                     mutate(value = 100)
             }
         }
-        
+
         if (geo_reactive()) {
             merge_df_spdf(selected_df, kc_tract_spdf)
         } else {
             merge_df_spdf(selected_df, kc_hra_spdf)
         }
     })
-    
+
     legend_title_reactive <- reactive({
         if (input$measure_type == "Count") {
             "Population Count"
@@ -172,7 +173,7 @@ server <- function(input, output, session) {
             "Population Percentage (%)"
         }
     })
-    
+
     popup_text_reactive <- reactive({
         paste0(
             ifelse(
@@ -188,19 +189,19 @@ server <- function(input, output, session) {
                 )
         )
     })
-    
+
     output$warning <- renderText({
         warning_text_reactive()
     })
-    
+
     output$age_warning <- renderText({
         age_warning_reactive()
     })
-    
+
     output$map <- renderLeaflet({
         selected_df <- tract_proj %>%
             filter(Year %in% 2020)
-        
+
         selected_df <- selected_df %>%
             filter(
                 Sex %in% c("Female", "Male"),
@@ -212,18 +213,18 @@ server <- function(input, output, session) {
             ) %>%
             group_by(GEOID) %>%
             summarize(value = sum(value))
-        
+
         sp <- merge_df_spdf(selected_df, kc_tract_spdf)
-        
+
         col_pal <- colorQuantile(
             palette = "Blues",
             domain = sp@data$value,
             n = 5,
             na.color = NA
         )
-        
+
         legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
-        
+
         leaflet(sp) %>%
             addProviderTiles(
                 providers$CartoDB.Positron,
@@ -479,21 +480,21 @@ server <- function(input, output, session) {
                 )
             )
     })
-    
+
     outputOptions(output, "map", suspendWhenHidden = FALSE)
-    
+
     observe({
         shinyjs::showElement(id = 'loading')
-        
+
         sp <- sp_reactive()
-        
+
         proxy_map <- leafletProxy(
             "map",
             data = sp
         ) %>%
             clearShapes() %>%
             clearControls()
-        
+
         if (all_selected()) {
             proxy_map <- proxy_map %>%
                 addPolygons(
@@ -540,9 +541,9 @@ server <- function(input, output, session) {
                 n = 5,
                 na.color = NA
             )
-            
+
             legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
-            
+
             proxy_map <- proxy_map %>%
                 addPolygons(
                     layerId = ~GEOID,
@@ -587,24 +588,24 @@ server <- function(input, output, session) {
                     position = "bottomright"
                 )
         }
-        
+
         Sys.sleep(1)
-        
+
         shinyjs::hideElement(id = 'loading')
     })
-    
-    
+
+
     #-----------------plot----------
     clicked_geo <- reactiveValues(df = NULL)
-    
+
     observeEvent(input$map_click,
                  {
                      clicked_geo$df <- NULL
                  },
                  priority = 100
     )
-    
-    
+
+
     observeEvent(input$map_shape_click,
                  {
                      if (geo_reactive()) {
@@ -617,10 +618,10 @@ server <- function(input, output, session) {
                  },
                  priority = 99
     )
-    
+
     df_reactive <- reactive({
         df <- clicked_geo$df
-        
+
         if (is.null(df)) {
             if (geo_reactive()) {
                 df <- tract_proj
@@ -628,10 +629,10 @@ server <- function(input, output, session) {
                 df <- hra_proj
             }
         }
-        
+
         df <- df %>%
             select(-GEOID)
-        
+
         if (measure_reactive() == "Count") {
             df <- df %>%
                 group_by(Year, Age5, Sex, Race) %>%
@@ -647,7 +648,7 @@ server <- function(input, output, session) {
                 select(-value)
             colnames(df)[5] <- "value"
         }
-        
+
         df <- df %>%
             filter(
                 Age5 %in% age_reactive(),
@@ -655,7 +656,7 @@ server <- function(input, output, session) {
             ) %>%
             group_by(Year, Race) %>%
             summarize(value = sum(value))
-        
+
         df <- rbind(
             df %>%
                 mutate(Race = "Total") %>%
@@ -665,17 +666,17 @@ server <- function(input, output, session) {
             df %>%
                 arrange(Race, Year)
         )
-        
+
         df
     })
-    
-    
+
+
     output$plot <- renderPlotly({
         df <- df_reactive()
-        
+
         yr = as.integer(year_reactive())
-        
-        
+
+
         P <- plot_ly(
             type = "scatter",
             mode = "lines"
@@ -698,7 +699,7 @@ server <- function(input, output, session) {
                     )
                 )
             )
-        
+
         col_pal <- c(
             c(
                 "rgba(1,1,1,1)",
@@ -711,21 +712,21 @@ server <- function(input, output, session) {
                 "rgba(191,91,23,1)"
             )
         )
-        
+
         index <- NULL
         races <- unique(df$Race)
         selected_race <- "Total"
-        
+
         if (length(race_reactive()) != 7) {
             selected_race <- race_reactive()
         }
-        
+
         for (i in 1:length(races)) {
             curr_race <- races[i]
-            
+
             if (curr_race != selected_race) {
                 pop <- filter(df, Race == curr_race)$value
-                
+
                 P <- add_trace(
                     P,
                     x = ~ unique(df$Year),
@@ -741,9 +742,9 @@ server <- function(input, output, session) {
                 index <- i
             }
         }
-        
+
         temp_yval <- filter(filter(df, Race == selected_race), Year == yr)[["value"]]
-        
+
         P <- add_trace(
             P,
             x = ~ unique(df$Year),
@@ -754,7 +755,7 @@ server <- function(input, output, session) {
                 width = 4
             )
         )
-        
+
         P <- layout(
             P,
             title = ifelse(
@@ -783,10 +784,10 @@ server <- function(input, output, session) {
                 )
             )
         )
-        
+
         P
     })
-    
+
     output$reset_chart_button <- renderUI(
         if (!is.null(clicked_geo$df)) {
             actionButton(
@@ -795,7 +796,7 @@ server <- function(input, output, session) {
             )
         }
     )
-    
+
     output$all_age_button <- renderUI(
         if (length(age_reactive()) != 18) {
             actionButton(
@@ -804,31 +805,31 @@ server <- function(input, output, session) {
             )
         }
     )
-    
+
     observeEvent(input$reset_line_chart, {
         clicked_geo$df <- NULL
     })
-    
+
     outputOptions(output, "plot", suspendWhenHidden = FALSE)
-    
+
     selected_charac_html_text <- reactiveValues()
-        
+
     observe({
         sex <- "female and male"
         if (length(sex_reactive()) == 1) {
             sex <- tolower(sex_reactive())
         }
-        
+
         race <- "population of all racial and ethnic groups"
-        
+
         if (length(race_reactive()) == 1 ) {
             race <- paste0(race_reactive(), " population")
         }
-        
+
         age <- "NA"
         lower <- "NA"
         upper <- "NA"
-        
+
         l = length(age_reactive())
         if (l != 0) {
             lower <- str_split(age_reactive()[1], "-")[[1]][1]
@@ -850,8 +851,8 @@ server <- function(input, output, session) {
                 )
             }
         }
-        
-        
+
+
         selected_charac_html_text$map <- paste0(
             "Currently displaying <strong>population ",
             tolower(measure_reactive()), "s",
@@ -869,7 +870,7 @@ server <- function(input, output, session) {
             ),
             "</strong> level."
         )
-        
+
         selected_charac_html_text$plot <- paste0(
             "Currently displaying <strong>population ",
             tolower(measure_reactive()), "s",
@@ -879,7 +880,7 @@ server <- function(input, output, session) {
             age,
             "</strong>."
         )
-        
+
         if (upper == "85+") {
             selected_charac_html_text$age <- paste0(
                 "Selected Age Range: ",
@@ -898,10 +899,10 @@ server <- function(input, output, session) {
                 upper,
                 ")"
             )
-            
+
         }
     })
-    
+
     observe({
         if (length(age_reactive()) != 18) {
             addTooltip(
@@ -913,7 +914,7 @@ server <- function(input, output, session) {
             )
         }
     })
-    
+
     observe({
         addTooltip(
             session,
@@ -923,7 +924,7 @@ server <- function(input, output, session) {
             options = list(html = TRUE)
         )
     })
-    
+
     observe({
         addTooltip(
             session,
@@ -933,5 +934,5 @@ server <- function(input, output, session) {
             options = list(html = TRUE)
         )
     })
-    
+
 }
