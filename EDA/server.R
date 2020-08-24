@@ -880,38 +880,40 @@ server <- function(input, output, session) {
             "</strong>."
         )
         
-        if (upper == "85+") {
-            selected_charac_html_text$age <- paste0(
-                "Selected Age Range: ",
-                age,
-                "</br>(i.e. ",
-                lower,
-                " ≤ Selected Ages)"
-            )
+        if (length(age_reactive()) == 18) {
+            selected_charac_html_text$age <- "All age groups are selected"
         } else {
-            selected_charac_html_text$age <- paste0(
-                "Selected Age Range: ",
-                age,
-                "</br>(i.e. ",
-                lower,
-                " ≤ Selected Ages < ",
-                upper,
-                ")"
-            )
+            if (upper == "85+") {
+                selected_charac_html_text$age <- paste0(
+                    "Selected Age Range: ",
+                    age,
+                    "</br>(i.e. ",
+                    lower,
+                    " ≤ Selected Ages)"
+                )
+            } else {
+                selected_charac_html_text$age <- paste0(
+                    "Selected Age Range: ",
+                    age,
+                    "</br>(i.e. ",
+                    lower,
+                    " ≤ Selected Ages < ",
+                    upper,
+                    ")"
+                )
+            }
             
         }
     })
     
     observe({
-        if (length(age_reactive()) != 18) {
-            addTooltip(
-                session,
-                id = "age",
-                title = selected_charac_html_text$age,
-                placement = "top",
-                options = list(html = TRUE)
-            )
-        }
+        addTooltip(
+            session,
+            id = "age",
+            title = selected_charac_html_text$age,
+            placement = "top",
+            options = list(html = TRUE)
+        )
     })
     
     observe({
