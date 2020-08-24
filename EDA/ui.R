@@ -1,3 +1,4 @@
+rm(list=ls())
 library(tidyverse)
 library(readxl)
 library(sf)
@@ -88,54 +89,63 @@ ui <- dashboardPage(
       tabItem(
         tabName = "intro",
         
-        tags$style(type='text/css', "p {font-size: 15px !important} "),
+        tags$style(type='text/css', "p {font-size: 16px !important} li {font-size: 16px !important}"),
         
         h1(
-          "Exploring our Future - King County Forecasts to 2045",
+          HTML("Exploring our Future - King County Forecasts to 2045"),
           align = "center"
         ),
         br(),
         
         
-        h2("King County Population Projections Overview"),
-        p(HTML("With support from the <a href='https://www.kingcounty.gov/depts/health.aspx'>Public Health Services Division of Seattle & King County</a> and in partnership with the  <a href='https://csde.washington.edu/'>University of Washington’s Center for Studies in Demography and Ecology</a>, the 2020 <a href='https://www.washington.edu/populationhealth/'>Population Health Initiative</a> Applied Research Fellowship Program developed small area population projections at the Census tract and Health Reporting Area (<a href='https://www.kingcounty.gov/depts/health/data/community-health-indicators/definitions.aspx'>HRA</a>) levels for King County by age, race and ethnicity in 5 year intervals from 2020 to 2045. These projections use demographic data from the <a href='https://www.census.gov/programs-surveys/acs'>American Community Survey</a> and the <a href='https://www.census.gov/'>Decennial Census</a>, along with existing population projections from the <a href='https://www.ofm.wa.gov/'>Washington Office of Financial Management (OFM)</a> and  <a href='https://www.psrc.org/'>Puget Sound Regional Council (PSRC)</a>.")),
+        h2(HTML("King County Population Projections Overview")),
+        p(HTML("With support from the <a href='https://www.kingcounty.gov/depts/health.aspx'>Public Health Services Division of Seattle & King County</a> and in partnership with the  <a href='https://csde.washington.edu/'>University of Washington’s Center for Studies in Demography and Ecology</a>, the 2020 <a href='https://www.washington.edu/populationhealth/'>Population Health Initiative</a> Applied Research Fellowship Program developed small area population projections at the <a href='https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13'>Census tract</a> and Health Reporting Area (<a href='https://www.kingcounty.gov/depts/health/data/community-health-indicators/definitions.aspx'>HRA</a>) levels for King County by age, race and ethnicity in 5 year intervals from 2020 to 2045. These projections use <a href='https://www.ofm.wa.gov/'>Washington State Office of Financial Management (OFM)</a> estimates of the King County population by sex, race, ethnicity, and 5-year age groups from 2010 and 2015 at the tract-, HRA-, and county-levels. The projections are assessed in relation to existing projections created by OFM and <a href='https://www.psrc.org/'>Puget Sound Regional Council (PSRC)</a>.")),
         br(),
         
-        h2("User Guide"),
-        p("The interactive mapping tool can be used to explore the changing dynamics of King County’s population over time by age, race and ethnicity, within census tracts and health reporting areas. For example, the [name of tool] let’s you see how King County’s population is expected to grow until 2045 if current trends in fertility, mortality, and migration continue. To explore the [name of tool], click the Interactive Map tab on the left side of this page."),
+        h2(HTML("User Guide")),
+        p(HTML("The interactive mapping tool can be used to explore anticipated changes in King County’s population over time by sex age, race and ethnicity, within census tracts and health reporting areas. For example, this tool allows you to see how King County’s population is expected to grow until 2045 if current trends in fertility, mortality, and migration continue. To explore this tool, click the <i>Interactive Map</i> tab on the left side of this page.")),
         br(),
         
-        h4(tags$i("Measure")),
-        p("To begin, select the measure by which you want to view the population totals by tract. Selecting the count measure will provide a projected population count within each census tract. This population count will be based on the selection of year, sex, age, and race groups chosen, as described below. "),
-        p("Selecting the percentage measure will provide the percentage of the selected group’s population divided by the total population of the corresponding geography. Note the legend icon in the bottom right corner of the map matches your selection accordingly, as does the y-axis of the line graph."),
-        br(),
-        
-        h4(tags$i("Year and Sex")),
-        p("To display projections by year, use the drop down menu to select the year of interest. To explore projections by sex choose the female, male or both option."),
-        br(),
-        
-        h4(tags$i("Age Range")),
-        p("The age feature allows users to display projections by specific age ranges in 5 year increments. Use the toggle feature to set a minimum and maximum age range (0 to 85+), or click the select all option to display projections across all ages. "),
+        h4(tags$i("Geographic Level")),
+        p(HTML("To begin, select the geographic level you are interested in examining. The projections are available at both the <i>census tract level</i> and the <i>HRA level</i>.")),
         br(),
         
         h4(tags$i("Race and Ethnicity")),
-        p("Projections can be displayed by specific race and ethnic groups by selecting from the provided race and ethnic categories. Selecting the all option provides projections across all races and ethnicities."),
+        p(HTML("Projections can be displayed by specific race and ethnic groups by selecting from the provided race and ethnic categories. Selecting the <i>all</i> option provides projections across all races and ethnicities.")),
+        br(),
+
+        h4(tags$i("Year")),
+        p("To display King County’s population composition by year, use the drop down menu to select the year of interest. Selecting years before 2020 will display King County’s population composition as it is estimated based on pre-existing data. Selecting 2020 or subsequent years will display what King County’s population is projected to look like if current trends in population change continue. These projections are therefore not certain."),
         br(),
         
-        h4(tags$i("Line Graph")),
-        p("The line graph feature provides an additional visual for understanding how different race and ethnic groups are changing over time. You may select multiple race and ethnic groups to view at once. Be sure to deselect when you no longer want to view a particular group in the line graph visual. "),
+        h4(tags$i("Sex")),
+        p(HTML("To explore projections by sex choose the <i>female</i>, <i>male</i> or <i>both</i> option.")),
+        br(),
+        
+        h4(tags$i("Age")),
+        p(HTML("The age feature allows users to display projections by specific age ranges in 5 year increments. Use the toggle feature to set a minimum and maximum age range (0 to 85+), or click the <i>select all</i> option to display projections across all ages. Note that because the age ranges are measured in 5-year increments, selecting 0-5 will actually reflect the 0-4-year-old population, and selecting 30-35 will show you the 30-34-year-old population. ")),
+        br(),
+        
+        h4(tags$i("Measure")),
+        p(HTML("Selecting the <i>count</i> measure will provide a projected population count within each census tract. This population count will be based on the selection of year, sex, age, and race groups chosen, as described above. For example, if you select \"Black\" \"Female,\" \"15-45,\" and year \"2030,\" the population count will show you the number of Black females aged 15-45 who are expected to live in a given tract or HRA in 2030 based on current population trends.")),
+        p(HTML("Selecting the <i>percentage</i> measure will provide the percentage of the selected group’s population divided by the total population of the tract or HRA. For example, if you select \"Asian\" \"Male\" \"65-75\" and year \"2040\", the population percentage will show you the percentage of the tract’s or HRA’s population that is expected to fall into the category \"Asian males aged 65 to 75\" in 2040.")),
+        p("Note the legend icon in the bottom right corner of the map matches your selection accordingly, as does the y-axis of the line graph."),
         br(),
         
         h4(tags$i("Map")),
-        p("All of the above selections are reflected in the map feature. Click on the map for detailed information by census tract. Additionally, the layers icon in the top right corner of the map allows the user to overlay multiple, current county facilities across all projections over time. "),
+        p("All of the above selections are reflected in the map feature. Click on the map for detailed information by census tract or HRA. Additionally, the layers icon in the top right corner of the map allows the user to overlay the locations of multiple, current county facilities across all projections over time."),
         br(),
         
-        h2("Assumptions"),
-        p("Although population projections aim to provide important estimates for planners, service providers, researchers, and the general public, they are only a reflection of what the population could look like if current population trends continue. They are not determinative of the future. . Further, small area projections can be more uncertain and so less predictive than projections for larger areas and populations, and less accurate for the distant future. Like all forecasts, our projections reflect a number of assumptions about expected populations dynamics in King County over the forecast period."),
+        h4(tags$i("Line Graph")),
+        p("The line graph feature provides an additional visual for understanding how different race and ethnic groups are changing over time by census tract or HRA, and reflects the age, race, ethnicity, and sex selections you’ve made above. Selecting a specific tract or HRA in the map will display the population of your selections above in the line graph visual. You may also select multiple race and ethnic groups from the line graph race and ethnicity categories to view at once. Be sure to deselect when you no longer want to view a particular group in the line graph visual."),
+        br(),
+        
+        h2("Limitations"),
+        p(HTML("Although population projections aim to provide important estimates for planners, service providers, researchers, and the general public, they are only a reflection of what the population <i>could</i> look like if current population trends continue. They are not determinative of the future. Further, small area projections can be more uncertain and so less predictive than projections for larger areas and populations, and less accurate for the distant future. Like all forecasts, our projections reflect a number of assumptions about expected populations dynamics in King County over the forecast period.")),
         br(),
         
         h2("Methods"),
-        p("The projections presented here use the Hamilton Perry method with smoothing (a variant of the cohort-component method) based on OFM’s 5-year age data by race, ethnicity, and sex at state, county, & tract level from [dates] as observed in data from the [date] American Community Survey and 2010 decennial census data. Projections were compared with OFM state-level population projections by sex, age, race and ethnicity from 2020 to 2045 and OFM county-level population projections by sex and age from 2020 to 2045."),
+        p(HTML("The projections presented here use the <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2822904/'>Hamilton Perry method</a> with smoothing (a variant of the cohort-component method) based on OFM’s 5-year age data by race, ethnicity, and sex at state, county, & tract level for 2015 and 2010. Projections were compared with OFM state-level population projections by sex, age, race and ethnicity from 2020 to 2045 and OFM county-level population projections by sex and age from 2020 to 2045. For more information on the methods and assumptions that are used to create these projections, please refer to the Technical Report.")),
         br()
         
       ),
@@ -204,7 +214,7 @@ ui <- dashboardPage(
                 height = 230
               ),
               helpText(
-                "* Click on a tract on the map above to see tract-level population.",
+                "* Click on a tract on the map above to see tract/HRA-level population.",
                 br(),
                 "** Click on a name in the legend on the right to show the line for the corresponding race/ethnicity.",
                 br(),
@@ -326,8 +336,6 @@ ui <- dashboardPage(
       
       tabItem(
         tabName = "ack",
-        
-        tags$style(type='text/css', "p {font-size: 15px !important} li {font-size: 15px !important}"),
         
         h1(
           "Acknowledgements",

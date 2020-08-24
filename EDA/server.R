@@ -864,7 +864,7 @@ server <- function(input, output, session) {
             "</strong> at the <strong>",
             ifelse(
                 geo_reactive(),
-                "Census Tract",
+                "census tract",
                 "HRA"
             ),
             "</strong> level."
