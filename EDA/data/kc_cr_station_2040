@@ -1,0 +1,20 @@
+{
+"type": "FeatureCollection",
+"name": "kc_cr_station_2040",
+"features": [
+{ "type": "Feature", "id": 1, "properties": { "Station Name": "Everett Station" }, "geometry": { "type": "Point", "coordinates": [ 1306463.1176470588, 358279.6470588235 ] } },
+{ "type": "Feature", "id": 2, "properties": { "Station Name": "Mukilteo Station" }, "geometry": { "type": "Point", "coordinates": [ 1281401.4705882352, 349638.5294117647 ] } },
+{ "type": "Feature", "id": 3, "properties": { "Station Name": "Edmonds Station" }, "geometry": { "type": "Point", "coordinates": [ 1259271.0, 299688.0 ] } },
+{ "type": "Feature", "id": 4, "properties": { "Station Name": "King St Station" }, "geometry": { "type": "Point", "coordinates": [ 1271361.588235294, 221873.5882352941 ] } },
+{ "type": "Feature", "id": 5, "properties": { "Station Name": "Tukwila Station" }, "geometry": { "type": "Point", "coordinates": [ 1292353.8235294118, 171043.23529411759 ] } },
+{ "type": "Feature", "id": 6, "properties": { "Station Name": "Kent Station" }, "geometry": { "type": "Point", "coordinates": [ 1293685.9411764706, 143303.17647058825 ] } },
+{ "type": "Feature", "id": 7, "properties": { "Station Name": "Auburn Station" }, "geometry": { "type": "Point", "coordinates": [ 1293352.1764705882, 114878.17647058825 ] } },
+{ "type": "Feature", "id": 8, "properties": { "Station Name": "Sumner Station" }, "geometry": { "type": "Point", "coordinates": [ 1289612.2941176472, 76725.705882352951 ] } },
+{ "type": "Feature", "id": 9, "properties": { "Station Name": "Puyallup Station" }, "geometry": { "type": "Point", "coordinates": [ 1276751.0, 73764.882352941204 ] } },
+{ "type": "Feature", "id": 10, "properties": { "Station Name": "Tacoma Station" }, "geometry": { "type": "Point", "coordinates": [ 1244371.7058823528, 91451.588235294097 ] } },
+{ "type": "Feature", "id": 11, "properties": { "Station Name": "South Tacoma Station" }, "geometry": { "type": "Point", "coordinates": [ 1229702.1176470588, 78909.23529411765 ] } },
+{ "type": "Feature", "id": 12, "properties": { "Station Name": "Lakewood Station" }, "geometry": { "type": "Point", "coordinates": [ 1225890.0, 60350.76470588235 ] } },
+{ "type": "Feature", "id": 13, "properties": { "Station Name": "DuPont Station" }, "geometry": { "type": "Point", "coordinates": [ 1190236.8823529412, 37904.882352941204 ] } },
+{ "type": "Feature", "id": 14, "properties": { "Station Name": "Tillicum Station" }, "geometry": { "type": "Point", "coordinates": [ 1212956.4705882352, 49656.294117647049 ] } }
+]
+}

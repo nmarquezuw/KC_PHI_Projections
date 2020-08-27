@@ -31,6 +31,8 @@ kc_schools <- list(
     "School - K thru 12" = kc_schools[kc_schools$CODE == "School - K thru 12", ]
 )
 
+kc_
+
 server <- function(input, output, session) {
     year_reactive <- reactive({
         input$year
@@ -457,6 +459,20 @@ server <- function(input, output, session) {
                     kc_schools[[7]]$DISTRICT,
                     kc_schools[[7]]$ADDRESS,
                     kc_schools[[7]]$ZIPCODE
+                ) %>%
+                    lapply(htmltools::HTML),
+                clusterOptions = TRUE
+            ) %>%
+            addMarkers(
+                data = kc_cr_station_2040,
+                group = paste(names(kc_schools)[4], "(2018)"),
+                popup = sprintf(
+                    "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
+                    kc_schools[[4]]$NAME,
+                    kc_schools[[4]]$CODE,
+                    kc_schools[[4]]$DISTRICT,
+                    kc_schools[[4]]$ADDRESS,
+                    kc_schools[[4]]$ZIPCODE
                 ) %>%
                     lapply(htmltools::HTML),
                 clusterOptions = TRUE
