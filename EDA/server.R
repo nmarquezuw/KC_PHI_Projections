@@ -1,13 +1,10 @@
 library(shiny)
 
-tract_proj <- read.csv(
-    file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
-    colClasses = c("GEOID" = "character")
-)
+kc_tl_2040 <- readOGR("./data/kc_tl_2040.json")
 
-hra_proj <- read.csv(
-    file = "./data/hra_age5_race_sex_proj_2000_2045.csv"
-)
+kc_cr_station_2040 <- readOGR("./data/kc_cr_station_2040.json")
+
+kc_lr_station_2040 <- readOGR("./data/kc_lr_station_2040.json")
 
 kc_tract_spdf <- readOGR("./data/kc_tract.json")
 
@@ -31,7 +28,14 @@ kc_schools <- list(
     "School - K thru 12" = kc_schools[kc_schools$CODE == "School - K thru 12", ]
 )
 
-kc_
+tract_proj <- read.csv(
+    file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
+    colClasses = c("GEOID" = "character")
+)
+
+hra_proj <- read.csv(
+    file = "./data/hra_age5_race_sex_proj_2000_2045.csv"
+)
 
 server <- function(input, output, session) {
     year_reactive <- reactive({
@@ -234,9 +238,70 @@ server <- function(input, output, session) {
                     maxZoom = 15
                 )
             ) %>%
+            setView(
+                lng = -121.810721,
+                lat = 47.412716,
+                zoom = 9
+            ) %>%
             setMaxBounds(
                 -123.222921, 48.300822,
                 -120.383728, 46.652146
+            ) %>%
+            addMapPane(
+                name = "layer1",
+                zIndex = "411"
+            ) %>%
+            addMapPane(
+                name = "layer2",
+                zIndex = "412"
+            ) %>%
+            addMapPane(
+                name = "layer3",
+                zIndex = "413"
+            ) %>%
+            addMapPane(
+                name = "layer4",
+                zIndex = "414"
+            ) %>%
+            addMapPane(
+                name = "layer5",
+                zIndex = "415"
+            ) %>%
+            addMapPane(
+                name = "layer6",
+                zIndex = "416"
+            ) %>%
+            addMapPane(
+                name = "layer7",
+                zIndex = "417"
+            ) %>%
+            addMapPane(
+                name = "layer8",
+                zIndex = "418"
+            ) %>%
+            addMapPane(
+                name = "layer9",
+                zIndex = "419"
+            ) %>%
+            addMapPane(
+                name = "layer10",
+                zIndex = "420"
+            ) %>%
+            addMapPane(
+                name = "layer11",
+                zIndex = "421"
+            ) %>%
+            addMapPane(
+                name = "layer12",
+                zIndex = "422"
+            ) %>%
+            addMapPane(
+                name = "layer13",
+                zIndex = "423"
+            ) %>%
+            addMapPane(
+                name = "layer14",
+                zIndex = "424"
             ) %>%
             addPolygons(
                 layerId = ~GEOID,
@@ -263,7 +328,8 @@ server <- function(input, output, session) {
                     style = list("font-weight" = "normal", padding = "3px 8px"),
                     textsize = "15px",
                     direction = "auto"
-                )
+                ),
+                options = pathOptions(pane = "layer1")
             ) %>%
             addLegend(
                 pal = col_pal,
@@ -297,7 +363,8 @@ server <- function(input, output, session) {
                     kc_public_clinics$ADDRESS,
                     kc_public_clinics$ZIPCODE
                 ) %>%
-                    lapply(htmltools::HTML)
+                    lapply(htmltools::HTML),
+                options = pathOptions(pane = "layer3")
             ) %>%
             addMarkers(
                 data = kc_wic,
@@ -312,7 +379,8 @@ server <- function(input, output, session) {
                     kc_wic$Name,
                     kc_wic$Address
                 ) %>%
-                    lapply(htmltools::HTML)
+                    lapply(htmltools::HTML),
+                options = pathOptions(pane = "layer4")
             ) %>%
             addMarkers(
                 data = kc_chc,
@@ -328,7 +396,8 @@ server <- function(input, output, session) {
                     kc_chc$Address
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                clusterOptions = TRUE,
+                options = pathOptions(pane = "layer5")
             ) %>%
             addMarkers(
                 data = kc_schools[[1]],
@@ -347,7 +416,8 @@ server <- function(input, output, session) {
                     kc_schools[[1]]$ZIPCODE
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                clusterOptions = TRUE,
+                options = pathOptions(pane = "layer6")
             ) %>%
             addMarkers(
                 data = kc_schools[[2]],
@@ -366,7 +436,8 @@ server <- function(input, output, session) {
                     kc_schools[[2]]$ZIPCODE
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                clusterOptions = TRUE,
+                options = pathOptions(pane = "layer7")
             ) %>%
             addMarkers(
                 data = kc_schools[[3]],
@@ -385,7 +456,8 @@ server <- function(input, output, session) {
                     kc_schools[[3]]$ZIPCODE
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                clusterOptions = TRUE,
+                options = pathOptions(pane = "layer8")
             ) %>%
             addMarkers(
                 data = kc_schools[[4]],
@@ -404,7 +476,8 @@ server <- function(input, output, session) {
                     kc_schools[[4]]$ZIPCODE
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                clusterOptions = TRUE,
+                options = pathOptions(pane = "layer9")
             ) %>%
             addMarkers(
                 data = kc_schools[[5]],
@@ -423,7 +496,8 @@ server <- function(input, output, session) {
                     kc_schools[[5]]$ZIPCODE
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                clusterOptions = TRUE,
+                options = pathOptions(pane = "layer10")
             ) %>%
             addMarkers(
                 data = kc_schools[[6]],
@@ -442,7 +516,8 @@ server <- function(input, output, session) {
                     kc_schools[[6]]$ZIPCODE
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                clusterOptions = TRUE,
+                options = pathOptions(pane = "layer11")
             ) %>%
             addMarkers(
                 data = kc_schools[[7]],
@@ -461,28 +536,59 @@ server <- function(input, output, session) {
                     kc_schools[[7]]$ZIPCODE
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                options = pathOptions(pane = "layer12")
             ) %>%
             addMarkers(
                 data = kc_cr_station_2040,
-                group = paste(names(kc_schools)[4], "(2018)"),
+                group = "Commuter Rail Stations (2040)",
+                icon = makeIcon(
+                    iconUrl = "https://img.icons8.com/windows/32/000000/city-railway-station.png",
+                    iconWidth = 20,
+                    iconHeight = 20
+                ),
                 popup = sprintf(
-                    "Name: <strong>%s</strong></br>Type: %s</br>District: %s</br>Address: %s</br>Zip Code: %s",
-                    kc_schools[[4]]$NAME,
-                    kc_schools[[4]]$CODE,
-                    kc_schools[[4]]$DISTRICT,
-                    kc_schools[[4]]$ADDRESS,
-                    kc_schools[[4]]$ZIPCODE
+                    "Station Name: <strong>%s</strong>",
+                    kc_cr_station_2040$Name
                 ) %>%
                     lapply(htmltools::HTML),
-                clusterOptions = TRUE
+                options = pathOptions(pane = "layer13")
+            ) %>%
+            addMarkers(
+                data = kc_lr_station_2040,
+                group = "Light Rail Stations (2040)",
+                icon = makeIcon(
+                    iconUrl = "https://img.icons8.com/windows/32/000000/city-railway-station.png",
+                    iconWidth = 20,
+                    iconHeight = 20
+                ),
+                popup = sprintf(
+                    "Station Name: <strong>%s</strong>",
+                    kc_lr_station_2040$Name
+                ) %>%
+                    lapply(htmltools::HTML),
+                options = pathOptions(pane = "layer14")
+            ) %>%
+            addPolylines(
+                data = kc_tl_2040,
+                group = "Transit Lines (2040)",
+                weight = 3,
+                opacity = 0.2,
+                popup = sprintf(
+                    "Transit Line Name: <strong>%s</strong>",
+                    kc_cr_station_2040$Name
+                ) %>%
+                    lapply(htmltools::HTML),
+                options = pathOptions(pane = "layer2")
             ) %>%
             addLayersControl(
                 overlayGroups = c(
                     "Public Health Clinics (2018)",
                     "Community Health Centers (2020)",
                     "Women, Infant and Children Services (2020)",
-                    paste(names(kc_schools), "(2018)")
+                    paste(names(kc_schools), "(2018)"),
+                    "Commuter Rail Stations (2040)",
+                    "Light Rail Stations (2040)",
+                    "Transit Lines (2040)"
                 ),
                 options = layersControlOptions(collapsed = TRUE)
             ) %>%
@@ -491,7 +597,10 @@ server <- function(input, output, session) {
                     "Public Health Clinics (2018)",
                     "Community Health Centers (2020)",
                     "Women, Infant and Children Services (2020)",
-                    paste(names(kc_schools), "(2018)")
+                    paste(names(kc_schools), "(2018)"),
+                    "Commuter Rail Stations (2040)",
+                    "Light Rail Stations (2040)",
+                    "Transit Lines (2040)"
                 )
             )
     })
@@ -537,7 +646,8 @@ server <- function(input, output, session) {
                         style = list("font-weight" = "normal", padding = "3px 8px"),
                         textsize = "15px",
                         direction = "auto"
-                    )
+                    ),
+                    options = pathOptions(pane = "layer1")
                 ) %>%
                 addLegend(
                     pal = colorNumeric(
@@ -582,7 +692,8 @@ server <- function(input, output, session) {
                         style = list("font-weight" = "normal", padding = "3px 8px"),
                         textsize = "15px",
                         direction = "auto"
-                    )
+                    ),
+                    options = pathOptions(pane = "layer1")
                 ) %>%
                 addLegend(
                     pal = col_pal,
@@ -623,13 +734,15 @@ server <- function(input, output, session) {
     
     observeEvent(input$map_shape_click,
                  {
-                     if (geo_reactive()) {
-                         clicked_geo$df <- tract_proj %>%
-                             filter(GEOID == input$map_shape_click$id)
-                     } else {
-                         clicked_geo$df <- hra_proj %>%
-                             filter(GEOID == input$map_shape_click$id)
-                     }
+                    if (!is.null(input$map_shape_click$id)) {
+                        if (geo_reactive()) {
+                            clicked_geo$df <- tract_proj %>%
+                                filter(GEOID == input$map_shape_click$id)
+                        } else {
+                            clicked_geo$df <- hra_proj %>%
+                                filter(GEOID == input$map_shape_click$id)
+                        }
+                    }
                  },
                  priority = 99
     )
