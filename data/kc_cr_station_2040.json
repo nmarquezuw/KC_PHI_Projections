@@ -1,0 +1,21 @@
+{
+"type": "FeatureCollection",
+"name": "kc_cr_station_2040",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Name": "Everett Station" }, "geometry": { "type": "Point", "coordinates": [ -122.196800353591328, 47.974098211561966 ] } },
+{ "type": "Feature", "properties": { "Name": "Mukilteo Station" }, "geometry": { "type": "Point", "coordinates": [ -122.298426709961745, 47.949150739378467 ] } },
+{ "type": "Feature", "properties": { "Name": "Edmonds Station" }, "geometry": { "type": "Point", "coordinates": [ -122.384605980588347, 47.811051576906728 ] } },
+{ "type": "Feature", "properties": { "Name": "King St Station" }, "geometry": { "type": "Point", "coordinates": [ -122.329254105427609, 47.598422997651753 ] } },
+{ "type": "Feature", "properties": { "Name": "Tukwila Station" }, "geometry": { "type": "Point", "coordinates": [ -122.240417425646513, 47.460182202944821 ] } },
+{ "type": "Feature", "properties": { "Name": "Kent Station" }, "geometry": { "type": "Point", "coordinates": [ -122.232993996726663, 47.384212454111577 ] } },
+{ "type": "Feature", "properties": { "Name": "Auburn Station" }, "geometry": { "type": "Point", "coordinates": [ -122.232255422630615, 47.306282232358662 ] } },
+{ "type": "Feature", "properties": { "Name": "Sumner Station" }, "geometry": { "type": "Point", "coordinates": [ -122.244506871831092, 47.201519073068191 ] } },
+{ "type": "Feature", "properties": { "Name": "Puyallup Station" }, "geometry": { "type": "Point", "coordinates": [ -122.296005146811964, 47.192745251349955 ] } },
+{ "type": "Feature", "properties": { "Name": "Tacoma Station" }, "geometry": { "type": "Point", "coordinates": [ -122.427673267395008, 47.23945996211161 ] } },
+{ "type": "Feature", "properties": { "Name": "South Tacoma Station" }, "geometry": { "type": "Point", "coordinates": [ -122.485626216378989, 47.20423511607396 ] } },
+{ "type": "Feature", "properties": { "Name": "Lakewood Station" }, "geometry": { "type": "Point", "coordinates": [ -122.499341442284887, 47.153144732359898 ] } },
+{ "type": "Feature", "properties": { "Name": "DuPont Station" }, "geometry": { "type": "Point", "coordinates": [ -122.64046486836051, 47.089421392306974 ] } },
+{ "type": "Feature", "properties": { "Name": "Tillicum Station" }, "geometry": { "type": "Point", "coordinates": [ -122.550346268031475, 47.123054440677237 ] } }
+]
+}

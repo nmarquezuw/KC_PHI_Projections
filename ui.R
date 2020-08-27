@@ -1,21 +1,16 @@
 rm(list=ls())
 library(tidyverse)
-library(readxl)
-library(sf)
-library(viridisLite)
-library(jsonlite)
+library(leaflet)
 library(plotly)
 library(dplyr)
-library(tidyr)
+library(sp)
 library(rgdal)
 library(geojsonio)
-library(sp)
 library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
 library(shinycssloaders)
 library(shinyBS)
-library(leaflet)
 source("./00_utils.R")
 
 # Source of the function
@@ -197,12 +192,16 @@ ui <- dashboardPage(
                 
                 tags$h3("Data and Resources Used for Creating the Map:"),
                 tags$ul(
+                  tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/2010-census-tracts-for-king-county-conflated-to-parcels-major-waterbodies-erased-tracts10-shore-area'>2010 Census Tracts Data by King County GIS Open Data</a>")),
+                  tags$li("2010 Health Reporting Area (HRA) data by King County Public Health"),
                   tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/public-health-clinics-ph-clinics-point'>King County Public Health Clinics Data by King County GIS Open Data</a>")),
                   tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/school-sites-in-king-county-schsite-point'>King County School Sites Data by King County GIS Open Data</a>")),
                   tags$li(HTML("The list of Community Health Centers is retrieved from <a href='https://www.kingcounty.gov/depts/health/locations/community-health-centers.aspx'>the King County Public Health website</a>")),
                   tags$li(HTML("The list of Women, Infant and Children Services is retrieved from <a href='https://www.kingcounty.gov/depts/health/locations/wic-first-steps.aspx'>the King County Public Health website</a>")),
+                  tags$li("The 2040 Commuter Rail Station, Light Rail Station, and Transit Line data by Puget Sound Regional Council (PSRC)"),
                   tags$li(HTML("<a href='https://icons8.com/icon/18112/hospital'>Hospital icon by Icons8</a>")),
-                  tags$li(HTML("<a href='https://icons8.com/icon/18744/school'>School icon by Icons8</a>"))
+                  tags$li(HTML("<a href='https://icons8.com/icon/18744/school'>School icon by Icons8</a>")),
+                  tags$li(HTML("<a href='https://icons8.com/icon/17941/city-railway-station'>City Railway Station icon by Icons8</a>"))
                 )
               )
             ),
