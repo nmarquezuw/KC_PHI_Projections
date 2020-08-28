@@ -7,6 +7,7 @@ library(sp)
 library(rgdal)
 library(geojsonio)
 library(shiny)
+library(shinyjs)
 library(shinydashboard)
 library(shinyWidgets)
 library(shinycssloaders)
@@ -149,188 +150,206 @@ ui <- dashboardPage(
       tabItem(
         tabName = "viz_tab",
         
-        tags$head(tags$style("#warning{color: red;
+        useShinyjs(),
+        
+        div(
+          id = "initializing_page",
+          div(
+            h1("Initializing", align = "center"),
+            br(),
+            br(),
+            div(addSpinner(div(), spin = "circle", color = "black"))
+          )
+        ),
+        hidden(
+          div(
+            id = "main_content",
+            
+            tags$head(tags$style("#warning{color: red;
                                  font-size: 20px;
                                  font-style: bold;
                                  }"
-        )
-        ),
-        
-        textOutput("warning"),
-        
-        singleton(tags$head(tags$script(src = "pop_patch.js"))),
-        tags$style(".tooltip{width: 200px; font-size: 14px; }"),
-        
-        fluidRow(
-          #----------viz------
-          column(
-            width = 9,
-
-            tabBox(
-              width = NULL,
-              height = 560,
-              
-              tabPanel(
-                title = "Map",
-                id = "map_tab",
+            )
+            ),
+            
+            textOutput("warning"),
+            
+            singleton(tags$head(tags$script(src = "pop_patch.js"))),
+            tags$style(".tooltip{width: 200px; font-size: 14px; }"),
+            
+            fluidRow(
+              #----------viz------
+              column(
+                width = 9,
                 
-                leafletOutput(
-                  "map",
-                  height = 500
+                tabBox(
+                  width = NULL,
+                  height = 560,
+                  
+                  tabPanel(
+                    shinyjs::useShinyjs(),
+                    shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px;", addSpinner(div(), spin = "circle", color = "black"))),
+                    
+                    title = "Map",
+                    id = "map_tab",
+                    
+                    leafletOutput(
+                      "map",
+                      height = 500
+                    )
+                    
+                  ),
+                  
+                  tabPanel(
+                    title = "Data Attribution",
+                    id = "data_attribution_tab",
+                    
+                    tags$style(type='text/css', "li {font-size: 15px !important}"),
+                    
+                    tags$h3("Data and Resources Used for Creating the Map:"),
+                    tags$ul(
+                      tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/2010-census-tracts-for-king-county-conflated-to-parcels-major-waterbodies-erased-tracts10-shore-area'>2010 Census Tracts Data by King County GIS Open Data</a>")),
+                      tags$li("2010 Health Reporting Area (HRA) data by King County Public Health"),
+                      tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/public-health-clinics-ph-clinics-point'>King County Public Health Clinics Data by King County GIS Open Data</a>")),
+                      tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/school-sites-in-king-county-schsite-point'>King County School Sites Data by King County GIS Open Data</a>")),
+                      tags$li(HTML("The list of Community Health Centers is retrieved from <a href='https://www.kingcounty.gov/depts/health/locations/community-health-centers.aspx'>the King County Public Health website</a>")),
+                      tags$li(HTML("The list of Women, Infant and Children Services is retrieved from <a href='https://www.kingcounty.gov/depts/health/locations/wic-first-steps.aspx'>the King County Public Health website</a>")),
+                      tags$li("The 2040 Commuter Rail Station, Light Rail Station, and Transit Line data by Puget Sound Regional Council (PSRC)"),
+                      tags$li(HTML("<a href='https://icons8.com/icon/18112/hospital'>Hospital icon by Icons8</a>")),
+                      tags$li(HTML("<a href='https://icons8.com/icon/18744/school'>School icon by Icons8</a>")),
+                      tags$li(HTML("<a href='https://icons8.com/icon/17941/city-railway-station'>City Railway Station icon by Icons8</a>"))
+                    )
+                  )
                 ),
                 
-                shinyjs::useShinyjs(),
-                shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px;", addSpinner(div(), spin = "circle", color = "black")))
-                
-              ),
-              
-              tabPanel(
-                title = "Data Attribution",
-                id = "data_attribution_tab",
-                
-                tags$style(type='text/css', "li {font-size: 15px !important}"),
-                
-                tags$h3("Data and Resources Used for Creating the Map:"),
-                tags$ul(
-                  tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/2010-census-tracts-for-king-county-conflated-to-parcels-major-waterbodies-erased-tracts10-shore-area'>2010 Census Tracts Data by King County GIS Open Data</a>")),
-                  tags$li("2010 Health Reporting Area (HRA) data by King County Public Health"),
-                  tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/public-health-clinics-ph-clinics-point'>King County Public Health Clinics Data by King County GIS Open Data</a>")),
-                  tags$li(HTML("<a href='https://gis-kingcounty.opendata.arcgis.com/datasets/school-sites-in-king-county-schsite-point'>King County School Sites Data by King County GIS Open Data</a>")),
-                  tags$li(HTML("The list of Community Health Centers is retrieved from <a href='https://www.kingcounty.gov/depts/health/locations/community-health-centers.aspx'>the King County Public Health website</a>")),
-                  tags$li(HTML("The list of Women, Infant and Children Services is retrieved from <a href='https://www.kingcounty.gov/depts/health/locations/wic-first-steps.aspx'>the King County Public Health website</a>")),
-                  tags$li("The 2040 Commuter Rail Station, Light Rail Station, and Transit Line data by Puget Sound Regional Council (PSRC)"),
-                  tags$li(HTML("<a href='https://icons8.com/icon/18112/hospital'>Hospital icon by Icons8</a>")),
-                  tags$li(HTML("<a href='https://icons8.com/icon/18744/school'>School icon by Icons8</a>")),
-                  tags$li(HTML("<a href='https://icons8.com/icon/17941/city-railway-station'>City Railway Station icon by Icons8</a>"))
+                box(
+                  width = NULL,
+                  plotlyOutput(
+                    "plot",
+                    height = 230
+                  ),
+                  helpText(
+                    "* Click on a tract on the map above to see tract/HRA-level population.",
+                    br(),
+                    "** Click on a name in the legend on the right to show the line for the corresponding race/ethnicity.",
+                    br(),
+                    "*** \"M\" indicates millions (‘000,000s); \"k\" indicates thousands (‘000s)."
+                  ),
+                  
+                  uiOutput("reset_chart_button")
+                  
                 )
-              )
-            ),
-            
-            box(
-              width = NULL,
-              plotlyOutput(
-                "plot",
-                height = 230
               ),
-              helpText(
-                "* Click on a tract on the map above to see tract/HRA-level population.",
-                br(),
-                "** Click on a name in the legend on the right to show the line for the corresponding race/ethnicity.",
-                br(),
-                "*** \"M\" indicates millions (‘000,000s); \"k\" indicates thousands (‘000s)."
-              ),
-              
-              uiOutput("reset_chart_button")
-              
-            )
-          ),
-          #----------options--------
-          column(
-            width = 3,
-            
-            box(
-              width = NULL,
-              
-              radioButtons(
-                inputId = "geo_level",
-                label = "Geographic Level",
-                choices = c("Census Tract", "Health Reporting Area (HRA)"),
-                selected = "Census Tract"
-              )
-            ),
-            
-            box(
-              width = NULL,
-              
-              radioButtons(
-                inputId = "race",
-                label = "Race and Ethnicity",
-                choices = c("All", "American Indian and Alaska Native (AIAN)", "Asian", "Black", "Hispanic", "Native Hawaiian or Other Pacific Islander (NHOPI)", "Two or More Races", "White"),
-                selected = "All"
-              )
-            ),
-            
-            
-            box(
-              width = NULL,
-              
-              sliderTextInput(
-                inputId = "age",
-                label = "Age Range",
-                choices = c(seq(0, 85, 5), "85+"),
-                selected = c("0", "85+"),
-                grid = TRUE
-              ),
-              
-              tags$head(tags$style("#age_warning{color: red;
+              #----------options--------
+              column(
+                width = 3,
+                
+                box(
+                  width = NULL,
+                  
+                  radioButtons(
+                    inputId = "geo_level",
+                    label = "Geographic Level",
+                    choices = c("Census Tract", "Health Reporting Area (HRA)"),
+                    selected = "Census Tract"
+                  )
+                ),
+                
+                box(
+                  width = NULL,
+                  
+                  radioButtons(
+                    inputId = "race",
+                    label = "Race and Ethnicity",
+                    choices = c("All", "American Indian and Alaska Native (AIAN)", "Asian", "Black", "Hispanic", "Native Hawaiian or Other Pacific Islander (NHOPI)", "Two or More Races", "White"),
+                    selected = "All"
+                  )
+                ),
+                
+                
+                box(
+                  width = NULL,
+                  
+                  sliderTextInput(
+                    inputId = "age",
+                    label = "Age Range",
+                    choices = c(seq(0, 85, 5), "85+"),
+                    selected = c("0", "85+"),
+                    grid = TRUE
+                  ),
+                  
+                  tags$head(tags$style("#age_warning{color: red;
                                  font-size: 18px;
                                  font-style: bold;
                                  }"
-              )
-              ),
-              
-              textOutput("age_warning"),
-              
-              uiOutput("all_age_button")
-            ),
-            
-            
-            box(
-              width = NULL,
-              height = 120,
-              
-              radioButtons(
-                inputId = "sex",
-                label = "Sex",
-                choices = c("Female", "Male", "Both"),
-                selected = "Both"
-              )
-            ),
-            
-            box(
-              width = NULL,
-              
-              selectInput(
-                inputId = "year",
-                label = "Year",
-                choices = seq(2000,2045,5),
-                selected = 2020
-              ),
-              
-              bsTooltip(
-                id = "year",
-                title = "<strong>Our population forecasts start from 2020</strong>; population data before 2020 are OFM estimates.",
-                placement = "top",
-                options = list(
-                  html = TRUE
+                  )
+                  ),
+                  
+                  textOutput("age_warning"),
+                  
+                  uiOutput("all_age_button")
+                ),
+                
+                
+                box(
+                  width = NULL,
+                  height = 120,
+                  
+                  radioButtons(
+                    inputId = "sex",
+                    label = "Sex",
+                    choices = c("Female", "Male", "Both"),
+                    selected = "Both"
+                  )
+                ),
+                
+                box(
+                  width = NULL,
+                  
+                  selectInput(
+                    inputId = "year",
+                    label = "Year",
+                    choices = seq(2000,2045,5),
+                    selected = 2020
+                  ),
+                  
+                  bsTooltip(
+                    id = "year",
+                    title = "<strong>Our population forecasts start from 2020</strong>; population data before 2020 are OFM estimates.",
+                    placement = "top",
+                    options = list(
+                      html = TRUE
+                    )
+                  )
+                ),
+                
+                box(
+                  width = NULL,
+                  height = 90,
+                  
+                  radioButtons(
+                    inputId = "measure_type",
+                    label = "Measure",
+                    choices = c("Count", "Percentage"),
+                    selected = "Count"
+                  ),
+                  
+                  radioTooltip(
+                    id = "measure_type",
+                    choice = "Percentage",
+                    title = "<img src=\"percentage_explanation.png\"/>",
+                    placement = "top",
+                    options = list(
+                      html = TRUE
+                    )
+                  )
                 )
-              )
-            ),
-            
-            box(
-              width = NULL,
-              height = 90,
-              
-              radioButtons(
-                inputId = "measure_type",
-                label = "Measure",
-                choices = c("Count", "Percentage"),
-                selected = "Count"
-              ),
-              
-              radioTooltip(
-                id = "measure_type",
-                choice = "Percentage",
-                title = "<img src=\"percentage_explanation.png\"/>",
-                placement = "top",
-                options = list(
-                  html = TRUE
-                )
+                
               )
             )
-            
           )
-         )
+        )
+        
       ),
       
       tabItem(

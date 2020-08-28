@@ -1,32 +1,10 @@
 library(shiny)
 
-kc_tl_2040 <- readOGR("./data/kc_tl_2040.json")
-
-kc_cr_station_2040 <- readOGR("./data/kc_cr_station_2040.json")
-
-kc_lr_station_2040 <- readOGR("./data/kc_lr_station_2040.json")
-
 kc_tract_spdf <- readOGR("./data/kc_tract.json")
 
 kc_hra_spdf <- readOGR("./data/kc_hra.json")
 
-kc_public_clinics <- readOGR("./data/kc_public_clinics.json")
-
-kc_wic <- readOGR("./data/kc_wic.json")
-
-kc_chc <- readOGR("./data/kc_chc.json")
-
-kc_schools <- readOGR("./data/kc_schools.json")
-
-kc_schools <- list(
-    "School - Elementary" = kc_schools[kc_schools$CODE == "School - Elementary", ],
-    "School - Junior High or Middle" = kc_schools[kc_schools$CODE == "School - Junior High or Middle", ],
-    "School - High" = kc_schools[kc_schools$CODE == "School - High", ],
-    "School - College or University" = kc_schools[kc_schools$CODE == "School - College or University", ],
-    "School - Alternative" = kc_schools[kc_schools$CODE == "School - Alternative", ],
-    "School - Other facility" = kc_schools[kc_schools$CODE == "School - Other facility", ],
-    "School - K thru 12" = kc_schools[kc_schools$CODE == "School - K thru 12", ]
-)
+kc_tl_2040 <- readOGR("./data/kc_tl_2040.json")
 
 tract_proj <- read.csv(
     file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
@@ -204,33 +182,58 @@ server <- function(input, output, session) {
     })
     
     output$map <- renderLeaflet({
-        selected_df <- tract_proj %>%
-            filter(Year %in% 2020)
+        kc_cr_station_2040 <- readOGR("./data/kc_cr_station_2040.json")
         
-        selected_df <- selected_df %>%
-            filter(
-                Sex %in% c("Female", "Male"),
-                Race %in% c("AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White"),
-                Age5 %in% c(
-                    "15-19", "20-24", "25-29", "30-34",
-                    "35-39", "40-44"
-                )
-            ) %>%
-            group_by(GEOID) %>%
-            summarize(value = sum(value))
+        kc_lr_station_2040 <- readOGR("./data/kc_lr_station_2040.json")
         
-        sp <- merge_df_spdf(selected_df, kc_tract_spdf)
+        kc_public_clinics <- readOGR("./data/kc_public_clinics.json")
         
-        col_pal <- colorQuantile(
-            palette = "Blues",
-            domain = sp@data$value,
-            n = 5,
-            na.color = NA
+        kc_wic <- readOGR("./data/kc_wic.json")
+        
+        kc_chc <- readOGR("./data/kc_chc.json")
+        
+        kc_schools <- readOGR("./data/kc_schools.json")
+        
+        kc_schools <- list(
+            "School - Elementary" = kc_schools[kc_schools$CODE == "School - Elementary", ],
+            "School - Junior High or Middle" = kc_schools[kc_schools$CODE == "School - Junior High or Middle", ],
+            "School - High" = kc_schools[kc_schools$CODE == "School - High", ],
+            "School - College or University" = kc_schools[kc_schools$CODE == "School - College or University", ],
+            "School - Alternative" = kc_schools[kc_schools$CODE == "School - Alternative", ],
+            "School - Other facility" = kc_schools[kc_schools$CODE == "School - Other facility", ],
+            "School - K thru 12" = kc_schools[kc_schools$CODE == "School - K thru 12", ]
         )
         
-        legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
+        shinyjs::hideElement(id = "initializing_page")
+        shinyjs::showElement(id = "main_content")
         
-        leaflet(sp) %>%
+        # selected_df <- tract_proj %>%
+        #     filter(Year %in% 2020)
+        # 
+        # selected_df <- selected_df %>%
+        #     filter(
+        #         Sex %in% c("Female", "Male"),
+        #         Race %in% c("AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White"),
+        #         Age5 %in% c(
+        #             "15-19", "20-24", "25-29", "30-34",
+        #             "35-39", "40-44"
+        #         )
+        #     ) %>%
+        #     group_by(GEOID) %>%
+        #     summarize(value = sum(value))
+        # 
+        # sp <- merge_df_spdf(selected_df, kc_tract_spdf)
+        # 
+        # col_pal <- colorQuantile(
+        #     palette = "Blues",
+        #     domain = sp@data$value,
+        #     n = 5,
+        #     na.color = NA
+        # )
+        # 
+        # legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
+        
+        leaflet() %>%
             addProviderTiles(
                 providers$CartoDB.Positron,
                 options = providerTileOptions(
@@ -303,52 +306,52 @@ server <- function(input, output, session) {
                 name = "layer14",
                 zIndex = "424"
             ) %>%
-            addPolygons(
-                layerId = ~GEOID,
-                color = "#606060",
-                weight = 1,
-                smoothFactor = 0.5,
-                opacity = 0.9,
-                fillOpacity = 0.6,
-                fillColor = ~ col_pal(value),
-                highlightOptions = highlightOptions(
-                    color = "white", weight = 2,
-                    bringToFront = TRUE
-                ),
-                label = sprintf(
-                    paste0(
-                        "GEOID: <strong>%s</strong><br/>",
-                        "Population: <strong>%g</strong>"
-                    ),
-                    sp$GEOID,
-                    sp$value
-                ) %>%
-                    lapply(htmltools::HTML),
-                labelOptions = labelOptions(
-                    style = list("font-weight" = "normal", padding = "3px 8px"),
-                    textsize = "15px",
-                    direction = "auto"
-                ),
-                options = pathOptions(pane = "layer1")
-            ) %>%
-            addLegend(
-                pal = col_pal,
-                values = ~value,
-                opacity = 0.7,
-                labFormat = {
-                    function(type, cuts, p) {
-                        n <- length(cuts)
-                        lower <- as.integer(cuts)[-n]
-                        if (-n != 1) {
-                            lower <- as.integer(cuts)[-n] + 1
-                        }
-                        upper <- as.integer(cuts)[-1]
-                        paste0(lower, " - ", upper, "(", seq(20, 100, 20)[-n], "th PCTL)")
-                    }
-                },
-                title = "Population Count",
-                position = "bottomright"
-            ) %>%
+            # addPolygons(
+            #     layerId = ~GEOID,
+            #     color = "#606060",
+            #     weight = 1,
+            #     smoothFactor = 0.5,
+            #     opacity = 0.9,
+            #     fillOpacity = 0.6,
+            #     fillColor = ~ col_pal(value),
+            #     highlightOptions = highlightOptions(
+            #         color = "white", weight = 2,
+            #         bringToFront = TRUE
+            #     ),
+            #     label = sprintf(
+            #         paste0(
+            #             "GEOID: <strong>%s</strong><br/>",
+            #             "Population: <strong>%g</strong>"
+            #         ),
+            #         sp$GEOID,
+            #         sp$value
+            #     ) %>%
+            #         lapply(htmltools::HTML),
+            #     labelOptions = labelOptions(
+            #         style = list("font-weight" = "normal", padding = "3px 8px"),
+            #         textsize = "15px",
+            #         direction = "auto"
+            #     ),
+            #     options = pathOptions(pane = "layer1")
+            # ) %>%
+            # addLegend(
+            #     pal = col_pal,
+            #     values = ~value,
+            #     opacity = 0.7,
+            #     labFormat = {
+            #         function(type, cuts, p) {
+            #             n <- length(cuts)
+            #             lower <- as.integer(cuts)[-n]
+            #             if (-n != 1) {
+            #                 lower <- as.integer(cuts)[-n] + 1
+            #             }
+            #             upper <- as.integer(cuts)[-1]
+            #             paste0(lower, " - ", upper, "(", seq(20, 100, 20)[-n], "th PCTL)")
+            #         }
+            #     },
+            #     title = "Population Count",
+            #     position = "bottomright"
+            # ) %>%
             addMarkers(
                 data = kc_public_clinics,
                 icon = makeIcon(
@@ -568,18 +571,6 @@ server <- function(input, output, session) {
                     lapply(htmltools::HTML),
                 options = pathOptions(pane = "layer14")
             ) %>%
-            addPolylines(
-                data = kc_tl_2040,
-                group = "Transit Lines (2040)",
-                weight = 3,
-                opacity = 0.2,
-                popup = sprintf(
-                    "Transit Line Name: <strong>%s</strong>",
-                    kc_cr_station_2040$Name
-                ) %>%
-                    lapply(htmltools::HTML),
-                options = pathOptions(pane = "layer2")
-            ) %>%
             addLayersControl(
                 overlayGroups = c(
                     "Public Health Clinics (2018)",
@@ -605,8 +596,6 @@ server <- function(input, output, session) {
             )
     })
     
-    outputOptions(output, "map", suspendWhenHidden = FALSE)
-    
     observe({
         shinyjs::showElement(id = 'loading')
         
@@ -617,7 +606,19 @@ server <- function(input, output, session) {
             data = sp
         ) %>%
             clearShapes() %>%
-            clearControls()
+            clearControls() %>%
+            addPolylines(
+                data = kc_tl_2040,
+                group = "Transit Lines (2040)",
+                weight = 3,
+                opacity = 0.2,
+                popup = sprintf(
+                    "Transit Line Name: <strong>%s</strong>",
+                    kc_tl_2040$Name
+                ) %>%
+                    lapply(htmltools::HTML),
+                options = pathOptions(pane = "layer2")
+            )
         
         if (all_selected()) {
             proxy_map <- proxy_map %>%
@@ -938,8 +939,6 @@ server <- function(input, output, session) {
         clicked_geo$df <- NULL
     })
     
-    outputOptions(output, "plot", suspendWhenHidden = FALSE)
-    
     selected_charac_html_text <- reactiveValues()
         
     observe({
@@ -1065,4 +1064,6 @@ server <- function(input, output, session) {
         )
     })
     
+    outputOptions(output, "map", suspendWhenHidden = FALSE)
+    outputOptions(output, "plot", suspendWhenHidden = FALSE)
 }
