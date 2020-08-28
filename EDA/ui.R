@@ -51,7 +51,7 @@ ui <- dashboardPage(
         # icon = icon("dashboard")
       ),
       menuItem(
-        "Interactive Map",
+        "Interactive Visualization",
         tabName = "viz_tab"
         # icon = icon("dashboard")
       ),
@@ -188,7 +188,7 @@ ui <- dashboardPage(
                   
                   tabPanel(
                     shinyjs::useShinyjs(),
-                    shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px;", addSpinner(div(), spin = "circle", color = "black"))),
+                    shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px; z-index: 1000;", addSpinner(div(), spin = "circle", color = "black"))),
                     
                     title = "Map",
                     id = "map_tab",
