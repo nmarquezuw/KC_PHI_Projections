@@ -95,12 +95,20 @@ ui <- dashboardPage(
         
         
         h2(HTML("King County Population Projections Overview")),
-        p(HTML("With support from the <a href='https://www.kingcounty.gov/depts/health.aspx'>Public Health Services Division of Seattle & King County</a> and in partnership with the  <a href='https://csde.washington.edu/'>University of Washington’s Center for Studies in Demography and Ecology</a>, the 2020 <a href='https://www.washington.edu/populationhealth/'>Population Health Initiative</a> Applied Research Fellowship Program developed small area population projections at the <a href='https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13'>Census tract</a> and Health Reporting Area (<a href='https://www.kingcounty.gov/depts/health/data/community-health-indicators/definitions.aspx'>HRA</a>) levels for King County by age, race and ethnicity in 5 year intervals from 2020 to 2045. These projections use <a href='https://www.ofm.wa.gov/'>Washington State Office of Financial Management (OFM)</a> estimates of the King County population by sex, race, ethnicity, and 5-year age groups from 2010 and 2015 at the tract-, HRA-, and county-levels. The projections are assessed in relation to existing projections created by OFM and <a href='https://www.psrc.org/'>Puget Sound Regional Council (PSRC)</a>.")),
+        p(HTML("With support from the <a href='https://www.kingcounty.gov/depts/health.aspx'>Public Health Services Division of Seattle & King County</a> and in partnership with the  <a href='https://csde.washington.edu/'>University of Washington’s Center for Studies in Demography and Ecology</a>, the 2020 <a href='https://www.washington.edu/populationhealth/'>Population Health Initiative</a> Applied Research Fellowship Program developed small area population projections at the <a href='https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13'>Census tract</a> and Health Reporting Area (<a href='https://www.kingcounty.gov/depts/health/data/community-health-indicators/definitions.aspx'>HRA</a>) levels for King County by age, race and ethnicity in 5 year intervals from 2020 to 2045. These UW projections use <a href='https://www.ofm.wa.gov/'>Washington State Office of Financial Management (OFM)</a> estimates of the King County population by sex, race, ethnicity, and 5-year age groups from 2010 and 2015 at the tract-, HRA-, and county-levels. The projections are assessed in relation to existing projections created by OFM and <a href='https://www.psrc.org/'>Puget Sound Regional Council (PSRC)</a>.")),
         br(),
         
         h2(HTML("User Guide")),
         p(HTML("The interactive mapping tool can be used to explore anticipated changes in King County’s population over time by sex age, race and ethnicity, within census tracts and health reporting areas. For example, this tool allows you to see how King County’s population is expected to grow until 2045 if current trends in fertility, mortality, and migration continue. To explore this tool, click the <i>Interactive Map</i> tab on the left side of this page.")),
         br(),
+        
+        
+        h3(tags$i("Walkthrough Video")),
+        tags$video(src = 'http://population-dynamics-lab.csde.washington.edu:8080/phi_viz_guide.mp4',  type = 'video/mp', controls = 'controls', autoplay = 'false', onloadstart="this.volume=0.3"),
+        br(),
+        br(),
+        br(),
+        
         
         h4(tags$i("Geographic Level")),
         p(HTML("To begin, select the geographic level you are interested in examining. The projections are available at both the <i>census tract level</i> and the <i>HRA level</i>.")),
@@ -129,7 +137,7 @@ ui <- dashboardPage(
         br(),
         
         h4(tags$i("Map")),
-        p("All of the above selections are reflected in the map feature. Click on the map for detailed information by census tract or HRA. Additionally, the layers icon in the top right corner of the map allows the user to overlay the locations of multiple, current county facilities across all projections over time."),
+        p("All of the above selections are reflected in the map feature. Click on the map for detailed information by census tract or HRA. Additionally, the layers icon in the top right corner of the map allows the user to overlay the locations of multiple, current county facilities across all projections over time. Note that for the \"Transit Lines (2040)\" layer, the darker color indicates that there are multiple transit lines covering the same route."),
         br(),
         
         h4(tags$i("Line Graph")),
