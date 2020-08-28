@@ -207,32 +207,6 @@ server <- function(input, output, session) {
         shinyjs::hideElement(id = "initializing_page")
         shinyjs::showElement(id = "main_content")
         
-        # selected_df <- tract_proj %>%
-        #     filter(Year %in% 2020)
-        # 
-        # selected_df <- selected_df %>%
-        #     filter(
-        #         Sex %in% c("Female", "Male"),
-        #         Race %in% c("AIAN", "Asian", "Black", "Hispanic", "NHOPI", "Two or More Races", "White"),
-        #         Age5 %in% c(
-        #             "15-19", "20-24", "25-29", "30-34",
-        #             "35-39", "40-44"
-        #         )
-        #     ) %>%
-        #     group_by(GEOID) %>%
-        #     summarize(value = sum(value))
-        # 
-        # sp <- merge_df_spdf(selected_df, kc_tract_spdf)
-        # 
-        # col_pal <- colorQuantile(
-        #     palette = "Blues",
-        #     domain = sp@data$value,
-        #     n = 5,
-        #     na.color = NA
-        # )
-        # 
-        # legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
-        
         leaflet() %>%
             addProviderTiles(
                 providers$CartoDB.Positron,
@@ -306,52 +280,6 @@ server <- function(input, output, session) {
                 name = "layer14",
                 zIndex = "424"
             ) %>%
-            # addPolygons(
-            #     layerId = ~GEOID,
-            #     color = "#606060",
-            #     weight = 1,
-            #     smoothFactor = 0.5,
-            #     opacity = 0.9,
-            #     fillOpacity = 0.6,
-            #     fillColor = ~ col_pal(value),
-            #     highlightOptions = highlightOptions(
-            #         color = "white", weight = 2,
-            #         bringToFront = TRUE
-            #     ),
-            #     label = sprintf(
-            #         paste0(
-            #             "GEOID: <strong>%s</strong><br/>",
-            #             "Population: <strong>%g</strong>"
-            #         ),
-            #         sp$GEOID,
-            #         sp$value
-            #     ) %>%
-            #         lapply(htmltools::HTML),
-            #     labelOptions = labelOptions(
-            #         style = list("font-weight" = "normal", padding = "3px 8px"),
-            #         textsize = "15px",
-            #         direction = "auto"
-            #     ),
-            #     options = pathOptions(pane = "layer1")
-            # ) %>%
-            # addLegend(
-            #     pal = col_pal,
-            #     values = ~value,
-            #     opacity = 0.7,
-            #     labFormat = {
-            #         function(type, cuts, p) {
-            #             n <- length(cuts)
-            #             lower <- as.integer(cuts)[-n]
-            #             if (-n != 1) {
-            #                 lower <- as.integer(cuts)[-n] + 1
-            #             }
-            #             upper <- as.integer(cuts)[-1]
-            #             paste0(lower, " - ", upper, "(", seq(20, 100, 20)[-n], "th PCTL)")
-            #         }
-            #     },
-            #     title = "Population Count",
-            #     position = "bottomright"
-            # ) %>%
             addMarkers(
                 data = kc_public_clinics,
                 icon = makeIcon(
@@ -546,8 +474,8 @@ server <- function(input, output, session) {
                 group = "Commuter Rail Stations (2040)",
                 icon = makeIcon(
                     iconUrl = "https://img.icons8.com/windows/32/000000/city-railway-station.png",
-                    iconWidth = 20,
-                    iconHeight = 20
+                    iconWidth = 15,
+                    iconHeight = 15
                 ),
                 popup = sprintf(
                     "Station Name: <strong>%s</strong>",
@@ -561,8 +489,8 @@ server <- function(input, output, session) {
                 group = "Light Rail Stations (2040)",
                 icon = makeIcon(
                     iconUrl = "https://img.icons8.com/windows/32/000000/city-railway-station.png",
-                    iconWidth = 20,
-                    iconHeight = 20
+                    iconWidth = 15,
+                    iconHeight = 15
                 ),
                 popup = sprintf(
                     "Station Name: <strong>%s</strong>",
@@ -610,6 +538,7 @@ server <- function(input, output, session) {
             addPolylines(
                 data = kc_tl_2040,
                 group = "Transit Lines (2040)",
+                color = "#62AC55",
                 weight = 3,
                 opacity = 0.2,
                 popup = sprintf(
