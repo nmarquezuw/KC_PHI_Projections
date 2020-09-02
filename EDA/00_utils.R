@@ -346,9 +346,9 @@ download_kc_tract <- function() {
     # Census Tract data source from King County GIS Open Data API
     # https://gis-kingcounty.opendata.arcgis.com/datasets/2010-census-tracts-for-king-county-conflated-to-parcels-major-waterbodies-erased-tracts10-shore-area?geometry=-125.956%2C46.738%2C-118.151%2C48.040
     kc_tract_spdf <- readLines("https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/census___base/MapServer/887/query?where=1%3D1&outFields=GEO_ID_TRT&outSR=4326&f=json")
-    kc_tract_spdf <- readOGR(kc_tract_spdf)
+    kc_tract_spdf <- readOGR(kc_tract_spdf, verbose = FALSE)
     colnames(kc_tract_spdf@data)[1] <- "GEOID"
-    writeOGR(kc_tract_spdf, dsn = "./data/kc_tract.json", layer = "kc_tract", driver="GeoJSON")
+    writeOGR(kc_tract_spdf, dsn = "./data/kc_tract.json", layer = "kc_tract", driver="GeoJSON", verbose = FALSE)
     
 }
 
@@ -363,7 +363,7 @@ download_kc_schools <- function() {
     # School Sites in King County / schsite point data source from King County GIS Open Data API
     # https://gis-kingcounty.opendata.arcgis.com/datasets/school-sites-in-king-county-schsite-point?geometry=-123.799%2C47.157%2C-120.017%2C47.807
     kc_schools <- readLines("https://gisdata.kingcounty.gov/arcgis/rest/services/OpenDataPortal/admin___base/MapServer/107/query?where=1%3D1&outFields=CODE,NAME,ADDRESS,ZIPCODE,DISTRICT&outSR=4326&f=json")
-    kc_schools <- readOGR(kc_schools)
+    kc_schools <- readOGR(kc_schools, verbose = FALSE)
     kc_schools@data <- kc_schools@data %>%
         mutate(
             CODE = case_when(
@@ -376,6 +376,27 @@ download_kc_schools <- function() {
                 CODE==666 ~ "School - K thru 12"
             )
         )
-    writeOGR(kc_schools, dsn = "./data/kc_schools.json", layer = "kc_schools", driver="GeoJSON")
+    writeOGR(kc_schools, dsn = "./data/kc_schools.json", layer = "kc_schools", driver="GeoJSON", verbose = FALSE)
+}
+
+# Source of the function
+# https://stackoverflow.com/a/37165597
+radioTooltip <- function(id, choice, title, placement = "bottom", trigger = "hover", options = NULL) {
+    options <- shinyBS:::buildTooltipOrPopoverOptionsList(title, placement, trigger, options)
+    options <- paste0("{'", paste(names(options), options, sep = "': '", collapse = "', '"), "'}")
+    bsTag <- shiny::tags$script(shiny::HTML(paste0("
+    $(document).ready(function() {
+      setTimeout(function() {
+        $('input', $('#", id, "')).each(function(){
+          if(this.getAttribute('value') == '", choice, "') {
+            opts = $.extend(", options, ", {html: true});
+            $(this.parentElement).tooltip('destroy');
+            $(this.parentElement).tooltip(opts);
+          }
+        })
+      }, 500)
+    });
+  ")))
+    htmltools::attachDependencies(bsTag, shinyBS:::shinyBSDep)
 }
 

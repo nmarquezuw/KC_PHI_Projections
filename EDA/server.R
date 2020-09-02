@@ -1,15 +1,27 @@
 library(shiny)
 
+# check if required files exist; if not, download the files and save locally
 if (!file.exists("./data/kc_tract.json")) {
     download_kc_tract()
+    while (!file.exists("./data/kc_tract.json")) {
+        Sys.sleep(1)
+    }
 }
 
 if (!file.exists("./data/kc_public_clinics.json")) {
     download_kc_public_clinics()
+    while (!file.exists("./data/kc_public_clinics.json")) {
+        Sys.sleep(1)
+    }
+    
 }
 
 if (!file.exists("./data/kc_schools.json")) {
     download_kc_schools()
+    while (!file.exists("./data/kc_schools.json")) {
+        Sys.sleep(1)
+    }
+    
 }
 
 kc_tract_spdf <- readOGR("./data/kc_tract.json")
@@ -17,6 +29,9 @@ kc_tract_spdf <- readOGR("./data/kc_tract.json")
 kc_hra_spdf <- readOGR("./data/kc_hra.json")
 
 kc_tl_2040 <- readOGR("./data/kc_tl_2040.json")
+while (!exists("kc_tl_2040")) {
+    Sys.sleep(1)
+}
 
 tract_proj <- read.csv(
     file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
