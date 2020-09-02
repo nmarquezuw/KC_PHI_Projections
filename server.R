@@ -1,10 +1,37 @@
 library(shiny)
 
+# check if required files exist; if not, download the files and save locally
+if (!file.exists("./data/kc_tract.json")) {
+    download_kc_tract()
+    while (!file.exists("./data/kc_tract.json")) {
+        Sys.sleep(1)
+    }
+}
+
+if (!file.exists("./data/kc_public_clinics.json")) {
+    download_kc_public_clinics()
+    while (!file.exists("./data/kc_public_clinics.json")) {
+        Sys.sleep(1)
+    }
+    
+}
+
+if (!file.exists("./data/kc_schools.json")) {
+    download_kc_schools()
+    while (!file.exists("./data/kc_schools.json")) {
+        Sys.sleep(1)
+    }
+    
+}
+
 kc_tract_spdf <- readOGR("./data/kc_tract.json")
 
 kc_hra_spdf <- readOGR("./data/kc_hra.json")
 
 kc_tl_2040 <- readOGR("./data/kc_tl_2040.json")
+while (!exists("kc_tl_2040")) {
+    Sys.sleep(1)
+}
 
 tract_proj <- read.csv(
     file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
@@ -498,6 +525,19 @@ server <- function(input, output, session) {
                 ) %>%
                     lapply(htmltools::HTML),
                 options = pathOptions(pane = "layer14")
+            ) %>%
+            addPolylines(
+                data = kc_tl_2040,
+                group = "Transit Lines (2040)",
+                color = "#62AC55",
+                weight = 3,
+                opacity = 0.2,
+                popup = sprintf(
+                    "Transit Line Name: <strong>%s</strong>",
+                    kc_tl_2040$Name
+                ) %>%
+                    lapply(htmltools::HTML),
+                options = pathOptions(pane = "layer2")
             ) %>%
             addLayersControl(
                 overlayGroups = c(

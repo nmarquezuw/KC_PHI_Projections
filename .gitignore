@@ -39,3 +39,8 @@ vignettes/*.pdf
 
 # Unnecessary .DS_Store files in macOS
 .DS_Store
+
+# GIS Data from King County OpenGIS Hub
+EDA/data/kc_tract.json
+EDA/data/kc_schools.json
+EDA/data/kc_public_clinics.json
