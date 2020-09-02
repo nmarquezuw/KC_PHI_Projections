@@ -1,5 +1,17 @@
 library(shiny)
 
+if (!file.exists("./data/kc_tract.json")) {
+    download_kc_tract()
+}
+
+if (!file.exists("./data/kc_public_clinics.json")) {
+    download_kc_public_clinics()
+}
+
+if (!file.exists("./data/kc_schools.json")) {
+    download_kc_schools()
+}
+
 kc_tract_spdf <- readOGR("./data/kc_tract.json")
 
 kc_hra_spdf <- readOGR("./data/kc_hra.json")
@@ -498,6 +510,19 @@ server <- function(input, output, session) {
                 ) %>%
                     lapply(htmltools::HTML),
                 options = pathOptions(pane = "layer14")
+            ) %>%
+            addPolylines(
+                data = kc_tl_2040,
+                group = "Transit Lines (2040)",
+                color = "#62AC55",
+                weight = 3,
+                opacity = 0.2,
+                popup = sprintf(
+                    "Transit Line Name: <strong>%s</strong>",
+                    kc_tl_2040$Name
+                ) %>%
+                    lapply(htmltools::HTML),
+                options = pathOptions(pane = "layer2")
             ) %>%
             addLayersControl(
                 overlayGroups = c(
