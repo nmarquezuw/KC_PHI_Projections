@@ -61,6 +61,7 @@ ui <- dashboardPage(
     ),
     
     tabItems(
+      # Introduction tab
       tabItem(
         tabName = "intro",
         
@@ -133,12 +134,14 @@ ui <- dashboardPage(
         
       ),
       
-      
+      # Interactive Visualization tab
       tabItem(
         tabName = "viz_tab",
         
+        # use shinyjs to control the loading page
         useShinyjs(),
         
+        # show loading page first when loading the data
         div(
           id = "initializing_page",
           div(
@@ -148,6 +151,8 @@ ui <- dashboardPage(
             div(addSpinner(div(), spin = "circle", color = "black"))
           )
         ),
+        
+        # the actual visualization tool page is hidden when the data are not loaded
         hidden(
           div(
             id = "main_content",
@@ -159,6 +164,7 @@ ui <- dashboardPage(
             )
             ),
             
+            # warning text for selecting "percentage" and the whole population, since the result would always be 100%
             textOutput("warning"),
             
             singleton(tags$head(tags$script(src = "pop_patch.js"))),
@@ -173,7 +179,9 @@ ui <- dashboardPage(
                   width = NULL,
                   height = 560,
                   
+                  # tab for the map
                   tabPanel(
+                    # loading spinner when loading new data based on user input
                     shinyjs::useShinyjs(),
                     shinyjs::hidden(div(id = 'loading', style = "position: absolute; left: 50%; top: 240px; z-index: 1000;", addSpinner(div(), spin = "circle", color = "black"))),
                     
@@ -187,6 +195,7 @@ ui <- dashboardPage(
                     
                   ),
                   
+                  # tab for the data attriubtion info
                   tabPanel(
                     title = "Data Attribution",
                     id = "data_attribution_tab",
@@ -209,6 +218,7 @@ ui <- dashboardPage(
                   )
                 ),
                 
+                # line chart
                 box(
                   width = NULL,
                   plotlyOutput(
@@ -227,6 +237,7 @@ ui <- dashboardPage(
                   
                 )
               ),
+              
               #----------options--------
               column(
                 width = 3,
@@ -300,6 +311,7 @@ ui <- dashboardPage(
                     selected = 2020
                   ),
                   
+                  # bstooltip for the helper window
                   bsTooltip(
                     id = "year",
                     title = "<strong>Our population forecasts start from 2020</strong>; population data before 2020 are OFM estimates.",
@@ -339,6 +351,7 @@ ui <- dashboardPage(
         
       ),
       
+      # Acknowledgement tab
       tabItem(
         tabName = "ack",
         
@@ -355,21 +368,6 @@ ui <- dashboardPage(
         
         p(
           "This research was supported by the following individuals:",
-          # tags$ul(
-          #   tags$li("Xiaoqi (Steven) Bao, Undergraduate"),
-          #   tags$li("Eileen Kazura, MPH Student"),
-          #   tags$li("Jessica Lapham, MSW, PhD Student"),
-          #   tags$li("Priya Sarma, Undergraduate"),
-          #   tags$li("Crystal Yu, MA, PhD Student"),
-          #   tags$li("Eva Wong MS, PhD"),
-          #   tags$li("Rebeccah Maskin, PhD"),
-          #   tags$li("Neal Marquez, MA"),
-          #   tags$li("Christine Leibbrand, PhD"),
-          #   tags$li("Sara Curran, PhD"),
-          #   tags$li("Meher Antia, PhD"),
-          #   tags$li("Derek Fulwiler, MA"),
-          #   tags$li("Takashi Inoue, PhD")
-          # )
           tags$ul(
             tags$li("Xiaoqi (Steven) Bao"),
             tags$li("Eileen Kazura"),
@@ -384,6 +382,25 @@ ui <- dashboardPage(
             tags$li("Meher Antia"),
             tags$li("Derek Fulwiler"),
             tags$li("Takashi Inoue")
+          )
+        ),
+        
+        br(),
+        p(
+          "The following R packages are used:",
+          tags$ul(
+            tags$li("tidyverse"),
+            tags$li("leaflet"),
+            tags$li("plotly"),
+            tags$li("dplyr"),
+            tags$li("sp"),
+            tags$li("rgdal"),
+            tags$li("geojsonio"),
+            tags$li("shiny"),
+            tags$li("shinydashboard"),
+            tags$li("shinyWidgets"),
+            tags$li("shinycssloaders"),
+            tags$li("shinyBS")
           )
         )
       )
