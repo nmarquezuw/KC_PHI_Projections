@@ -38,9 +38,17 @@ tract_proj <- read.csv(
     colClasses = c("GEOID" = "character")
 )
 
+while (!exists("tract_proj")) {
+    Sys.sleep(1)
+}
+
 hra_proj <- read.csv(
     file = "./data/hra_age5_race_sex_proj_2000_2045.csv"
 )
+
+while (!exists("hra_proj")) {
+    Sys.sleep(1)
+}
 
 server <- function(input, output, session) {
     year_reactive <- reactive({
