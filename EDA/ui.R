@@ -130,7 +130,9 @@ ui <- dashboardPage(
         
         h2("Methods"),
         p(HTML("The projections presented here use the <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2822904/'>Hamilton Perry method</a> with smoothing (a variant of the cohort-component method) based on OFM’s 5-year age data by race, ethnicity, and sex at state, county, & tract level for 2015 and 2010. Projections were compared with OFM state-level population projections by sex, age, race and ethnicity from 2020 to 2045 and OFM county-level population projections by sex and age from 2020 to 2045. For more information on the methods and assumptions that are used to create these projections, please refer to the <a href='http://population-dynamics-lab.csde.washington.edu:8080/uw_forecast_2045_technical_report.pdf'>Technical Report</a>.")),
-        br()
+        br(),
+        
+        p(HTML("Please contact <a href='mailto:csde@uw.edu'>csde@uw.edu</a> if you have any questions."))
         
       ),
       
