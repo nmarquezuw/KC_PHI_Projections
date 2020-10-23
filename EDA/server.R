@@ -1097,6 +1097,7 @@ server <- function(input, output, session) {
         )
     })
     
+    
     # preload the visualization once the website is opened
     outputOptions(output, "map", suspendWhenHidden = FALSE)
     outputOptions(output, "plot", suspendWhenHidden = FALSE)
