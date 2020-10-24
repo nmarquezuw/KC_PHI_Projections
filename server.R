@@ -1,6 +1,8 @@
 library(shiny)
 
 # check if required files exist; if not, download the files and save locally
+
+# King County census tract GIS data
 if (!file.exists("./data/kc_tract.json")) {
     download_kc_tract()
     while (!file.exists("./data/kc_tract.json")) {
@@ -8,6 +10,7 @@ if (!file.exists("./data/kc_tract.json")) {
     }
 }
 
+# King County public clinics GIS data
 if (!file.exists("./data/kc_public_clinics.json")) {
     download_kc_public_clinics()
     while (!file.exists("./data/kc_public_clinics.json")) {
@@ -16,6 +19,7 @@ if (!file.exists("./data/kc_public_clinics.json")) {
     
 }
 
+# King County school sites GIS data
 if (!file.exists("./data/kc_schools.json")) {
     download_kc_schools()
     while (!file.exists("./data/kc_schools.json")) {
@@ -24,28 +28,31 @@ if (!file.exists("./data/kc_schools.json")) {
     
 }
 
+# load census tract GIS data
 kc_tract_spdf <- readOGR("./data/kc_tract.json")
 
+# load health reporting area GIS data
 kc_hra_spdf <- readOGR("./data/kc_hra.json")
 
+# load transit line data
 kc_tl_2040 <- readOGR("./data/kc_tl_2040.json")
 while (!exists("kc_tl_2040")) {
     Sys.sleep(1)
 }
 
+# load tract-level projections
 tract_proj <- read.csv(
     file = "./data/tract_age5_race_sex_proj_2000_2045.csv",
     colClasses = c("GEOID" = "character")
 )
-
 while (!exists("tract_proj")) {
     Sys.sleep(1)
 }
 
+# load HRA-level projections
 hra_proj <- read.csv(
     file = "./data/hra_age5_race_sex_proj_2000_2045.csv"
 )
-
 while (!exists("hra_proj")) {
     Sys.sleep(1)
 }
@@ -109,6 +116,7 @@ server <- function(input, output, session) {
         input$measure_type
     })
     
+    # return TRUE if "percentage" and the whole population are selected; this is for generating the warning message
     all_selected <- reactive({
         measure_reactive() == "Percentage" &&
             length(sex_reactive()) == 2 &&
@@ -116,6 +124,7 @@ server <- function(input, output, session) {
             length(race_reactive()) == 7
     })
     
+    # warning message when "percentage" and the whole population are selected
     warning_text_reactive <- reactive({
         if (all_selected()) {
             "Please change the \"Measure\" option to \"Count\" when the whole population is selected!"
@@ -124,23 +133,16 @@ server <- function(input, output, session) {
         }
     })
     
+    # warning message when the no age interval is selected
     age_warning_reactive <- reactive({
         if (length(age_reactive()) == 0) {
             "Please select a VALID age range!"
         }
     })
     
-    observeEvent(input$all_age, {
-        updateSliderTextInput(
-            session,
-            inputId = "age",
-            label = "Age Range",
-            choices = c(seq(0, 85, 5), "85+"),
-            selected = c("0", "85+")
-        )
-    })
-    
+    # generate an sp object with population data and related geographic data based on user input
     sp_reactive <- reactive({
+        # selected geographic level and then selected age groups
         if (geo_reactive()) {
             selected_df <- tract_proj %>%
                 filter(Year %in% year_reactive())
@@ -149,6 +151,7 @@ server <- function(input, output, session) {
                 filter(Year %in% year_reactive())
         }
         
+        # if percentage is selected, calculate the percentage values and save in the "value" column
         if (measure_reactive() == "Percentage") {
             selected_df <- selected_df %>%
                 group_by(GEOID) %>%
@@ -161,6 +164,7 @@ server <- function(input, output, session) {
             colnames(selected_df)[6] <- "value"
         }
         
+        # selected sex, race, and age range
         selected_df <- selected_df %>%
             filter(
                 Sex %in% sex_reactive(),
@@ -170,6 +174,9 @@ server <- function(input, output, session) {
             group_by(GEOID) %>%
             summarize(value = sum(value))
         
+        # if "percentage" and the whole population are selected, the calculation
+        # will not always be 100% but have some small variances (around 0.5%)
+        # the code belowe changes them all to 100% to avoid confusion
         if (measure_reactive() == "Percentage") {
             if (all_selected()) {
                 selected_df <- selected_df %>%
@@ -177,6 +184,7 @@ server <- function(input, output, session) {
             }
         }
         
+        # merge the dataframe with the corresponding geographic level GIS data and return
         if (geo_reactive()) {
             merge_df_spdf(selected_df, kc_tract_spdf)
         } else {
@@ -216,19 +224,27 @@ server <- function(input, output, session) {
         age_warning_reactive()
     })
     
+    # render the initial basemap and the public facility layers
     output$map <- renderLeaflet({
+        # load community rail station GIS data
         kc_cr_station_2040 <- readOGR("./data/kc_cr_station_2040.json")
         
+        # load light rail station GIS data
         kc_lr_station_2040 <- readOGR("./data/kc_lr_station_2040.json")
         
+        # load public clinics GIS data
         kc_public_clinics <- readOGR("./data/kc_public_clinics.json")
         
+        # load Women, Infant and Children Services GIS data
         kc_wic <- readOGR("./data/kc_wic.json")
         
+        # load Community Health Centers GIS data
         kc_chc <- readOGR("./data/kc_chc.json")
         
+        # load school sites data
         kc_schools <- readOGR("./data/kc_schools.json")
         
+        # replace code with the corresponding site type name
         kc_schools <- list(
             "School - Elementary" = kc_schools[kc_schools$CODE == "School - Elementary", ],
             "School - Junior High or Middle" = kc_schools[kc_schools$CODE == "School - Junior High or Middle", ],
@@ -239,6 +255,7 @@ server <- function(input, output, session) {
             "School - K thru 12" = kc_schools[kc_schools$CODE == "School - K thru 12", ]
         )
         
+        # remove the loading page and show the main content
         shinyjs::hideElement(id = "initializing_page")
         shinyjs::showElement(id = "main_content")
         
@@ -259,6 +276,8 @@ server <- function(input, output, session) {
                 -123.222921, 48.300822,
                 -120.383728, 46.652146
             ) %>%
+            # define z-indexes manually for the polygons, markers, lines added to the map
+            # polygon(bottom), line(middle), marker(top)
             addMapPane(
                 name = "layer1",
                 zIndex = "411"
@@ -315,6 +334,7 @@ server <- function(input, output, session) {
                 name = "layer14",
                 zIndex = "424"
             ) %>%
+            # add the public facility layers
             addMarkers(
                 data = kc_public_clinics,
                 icon = makeIcon(
@@ -572,6 +592,7 @@ server <- function(input, output, session) {
             )
     })
     
+    # this function updates the map based on user input
     observe({
         shinyjs::showElement(id = 'loading')
         
@@ -581,8 +602,11 @@ server <- function(input, output, session) {
             "map",
             data = sp
         ) %>%
+            # clear the existing shapes and legend
             clearShapes() %>%
             clearControls() %>%
+            # since polyline will also be removed by the clearShape() function
+            # add the layer again here
             addPolylines(
                 data = kc_tl_2040,
                 group = "Transit Lines (2040)",
@@ -638,6 +662,7 @@ server <- function(input, output, session) {
                     position = "bottomright"
                 )
         } else {
+            # define the color palette for filling the polygons based on population
             col_pal <- colorQuantile(
                 palette = "Blues",
                 domain = sp@data$value,
@@ -645,8 +670,10 @@ server <- function(input, output, session) {
                 na.color = NA
             )
             
+            # calculate the values displayed in the legend
             legend_values <- quantile(sp@data$value, type = 5, names = FALSE, na.rm = TRUE)
             
+            # add the new population data to the map
             proxy_map <- proxy_map %>%
                 addPolygons(
                     layerId = ~GEOID,
@@ -702,17 +729,20 @@ server <- function(input, output, session) {
     #-----------------plot----------
     clicked_geo <- reactiveValues(df = NULL)
     
+    # if not clicking on a polygon, remove the clicked polygon info
     observeEvent(input$map_click,
                  {
+                     print(paste("MAP", input$map_click))
                      clicked_geo$df <- NULL
                  },
                  priority = 100
     )
     
-    
+    # if clicking on a polygon, save the clicked polygon info
     observeEvent(input$map_shape_click,
                  {
-                    if (!is.null(input$map_shape_click$id)) {
+                     print(paste("MAP SHAPE", input$map_shape_click))
+                     if (!is.null(input$map_shape_click$id)) {
                         if (geo_reactive()) {
                             clicked_geo$df <- tract_proj %>%
                                 filter(GEOID == input$map_shape_click$id)
@@ -725,9 +755,12 @@ server <- function(input, output, session) {
                  priority = 99
     )
     
+    # generate a dataframe for the line chart
     df_reactive <- reactive({
+        # used the clicked polygon
         df <- clicked_geo$df
         
+        # if no polygon is clicked, use the county total data
         if (is.null(df)) {
             if (geo_reactive()) {
                 df <- tract_proj
@@ -739,6 +772,7 @@ server <- function(input, output, session) {
         df <- df %>%
             select(-GEOID)
         
+        # calculate the data based on user input; similar to the process in sp_reactive()
         if (measure_reactive() == "Count") {
             df <- df %>%
                 group_by(Year, Age5, Sex, Race) %>%
@@ -763,6 +797,7 @@ server <- function(input, output, session) {
             group_by(Year, Race) %>%
             summarize(value = sum(value))
         
+        # add rows for the total population of all race and ethnicity categories
         df <- rbind(
             df %>%
                 mutate(Race = "Total") %>%
@@ -787,6 +822,7 @@ server <- function(input, output, session) {
             type = "scatter",
             mode = "lines"
         ) %>%
+            # add the vertical dash line at 2020
             layout(
                 yaxis = list(rangemode = "tozero"),
                 shapes = list(
@@ -806,6 +842,7 @@ server <- function(input, output, session) {
                 )
             )
         
+        # pre-define the colors for drawing lines for different race and ethnicity categories
         col_pal <- c(
             c(
                 "rgba(1,1,1,1)",
@@ -821,12 +858,14 @@ server <- function(input, output, session) {
         
         index <- NULL
         races <- unique(df$Race)
+        
         selected_race <- "Total"
         
         if (length(race_reactive()) != 7) {
             selected_race <- race_reactive()
         }
         
+        # draw the lines for the unselected race and ethnicity categories and hide them first
         for (i in 1:length(races)) {
             curr_race <- races[i]
             
@@ -851,6 +890,7 @@ server <- function(input, output, session) {
         
         temp_yval <- filter(filter(df, Race == selected_race), Year == yr)[["value"]]
         
+        # draw the line for the selected race/ethnicity
         P <- add_trace(
             P,
             x = ~ unique(df$Year),
@@ -862,6 +902,7 @@ server <- function(input, output, session) {
             )
         )
         
+        # add titles
         P <- layout(
             P,
             title = ifelse(
@@ -894,6 +935,7 @@ server <- function(input, output, session) {
         P
     })
     
+    # generate a button for going back to the county-level data if a polygon is clicked
     output$reset_chart_button <- renderUI(
         if (!is.null(clicked_geo$df)) {
             actionButton(
@@ -903,6 +945,7 @@ server <- function(input, output, session) {
         }
     )
     
+    # generate a button for quickly selecting all age groups when not all age groups are selected
     output$all_age_button <- renderUI(
         if (length(age_reactive()) != 18) {
             actionButton(
@@ -912,10 +955,23 @@ server <- function(input, output, session) {
         }
     )
     
+    # if "Select All Age Groups" button is clicked, update the input
+    observeEvent(input$all_age, {
+        updateSliderTextInput(
+            session,
+            inputId = "age",
+            label = "Age Range",
+            choices = c(seq(0, 85, 5), "85+"),
+            selected = c("0", "85+")
+        )
+    })
+    
+    # if "Go Back to County-Level Data" button is clicked, set the clicked polygon to NULL
     observeEvent(input$reset_line_chart, {
         clicked_geo$df <- NULL
     })
     
+    # define the helper text the visualizations
     selected_charac_html_text <- reactiveValues()
         
     observe({
@@ -1041,6 +1097,8 @@ server <- function(input, output, session) {
         )
     })
     
+    
+    # preload the visualization once the website is opened
     outputOptions(output, "map", suspendWhenHidden = FALSE)
     outputOptions(output, "plot", suspendWhenHidden = FALSE)
 }
