@@ -45,17 +45,45 @@ ui <- dashboardPage(
       )
     ),
     
-    img(
-      src = "uw_logo.png",
-      height = "45px",
-      style = "position: fixed; left: 10px; bottom: 13px;"
+    br(),
+    br(),
+    
+    div(
+      id = "attr_info",
+      # style="position:relative; font-size:14px !important; width: 230px;bottom: 0px; padding: 12px 15px 12px 15px;color: #b8c7ce;",
+      hr(
+        style="border-top: 1px solid #5c6367;"
+      ),
+      HTML("For more information contact:<br><a href='mailto:csde@uw.edu'>csde@uw.edu</a>"),
+      br(),
+      br(),
+      HTML("Funding for this project provided by: <br> <ul style='list-style-position: outside; padding-inline-start: 20px; padding-inline-end: 15px;'><li style='font-size:13px !important;'>UW Population Health Initiative</li><li style='font-size:13px !important;'>Center for Studies in Demography & Ecology</li></ul>"),
+      br(),
+      
+      hr(
+        style="border-top: 1px solid #5c6367;"
+      ),
+      div(
+        style="width:230px;padding-bottom:10px;",
+        img(
+          src = "uw_logo.png",
+          height = "45px",
+          style = "position: relative;"
+        ),
+        
+        img(
+          src = "csde_logo.gif",
+          height = "50px",
+          style = "position: relative;"
+        )
+      ),
+      
+      HTML(
+        "<i style='position:relative; font-size:12px; bottom:0px; width:230px; height: 210px; padding: 0px 30px 12px 0px;'>CSDE acknowledges we are on Coast Salish territory, the traditional homeland of the Duwamish, Suquamish, Tulalip, and Muckleshoot nations and other Native peoples.<br>CSDE’s commissioned logo from Native artist, UW Professor Marvin Oliver acknowledges these vital connections to native peoples and territories.</i>"
+      )
     ),
     
-    img(
-      src = "csde_logo.gif",
-      height = "50px",
-      style = "position: fixed; left: 100px; bottom: 10px;"
-    ),
+    
     collapsed = FALSE
   ),
   
