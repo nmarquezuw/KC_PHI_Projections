@@ -1,17 +1,28 @@
-.sidebar {
+#attr_info {
   position: fixed;
+  font-size: 14px !important;
+  width: 230px;
+  bottom: 0px;
+  padding: 12px 15px 12px 15px;
+  color: #b8c7ce;
+}
+
+@media (max-height: 800px) {
+  #attr_info {
+    position: relative;
+  }
 }
 
 .skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
-    color: #fff;
-    background: #1e282c;
-    border-left-color: #3c8dbc;
-    width: 230px;
+  color: #fff;
+  background: #1e282c;
+  border-left-color: #3c8dbc;
+  width: 230px;
 }
 
 .main-header {
   position: fixed;
-  width:100%;
+  width: 100%;
 }
 
 .content {
