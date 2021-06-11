@@ -362,7 +362,7 @@ ui <- dashboardPage(
         
         
         h3("Walkthrough Video"),
-        tags$video(src = 'http://population-dynamics-lab.csde.washington.edu:8080/phi_viz_guide.mp4',  type = 'video/mp', controls = 'controls', onloadstart="this.volume=0.3", width="100%"),
+        tags$video(id = "video", src = 'phi_viz_guide.mp4',  type = 'video/mp4', controls = 'controls', onloadstart="this.volume=0.3", width="100%"),
         br(),
         br(),
         br(),
