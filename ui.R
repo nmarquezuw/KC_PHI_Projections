@@ -1,9 +1,4 @@
 rm(list=ls())
-# install newest version of isoband (a dependency package)
-# because versions <= 0.2.4 will cause error during installation
-if (!require(isoband)) {
-  remotes::install_github("wilkelab/isoband")
-}
 library(tidyverse)
 library(leaflet)
 library(plotly)
